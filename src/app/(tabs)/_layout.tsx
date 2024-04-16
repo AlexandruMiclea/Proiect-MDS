@@ -13,7 +13,7 @@ function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome size={26} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
@@ -27,25 +27,15 @@ export default function TabLayout() {
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
       }}>
+
+      <Tabs.Screen name="index" options={{href: null}}/>
+        
       <Tabs.Screen
-        name="index"
+        name="explore"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/Profile" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome5
-                    name="user-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: "Explore",
+          tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
+          
         }}
       />
       <Tabs.Screen
