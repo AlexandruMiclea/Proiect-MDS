@@ -1,9 +1,7 @@
-import { StyleSheet, Text, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, Image, Pressable, View } from 'react-native';
 import Colors from '@/constants/Colors';
 import { Place } from '@/types';
 import { Link } from 'expo-router';
-
-export const defaultPlaceImage = '@assets/images/placeholder.jpg'
 
 type PlaceListItemProps = {
     place : Place;
@@ -16,25 +14,31 @@ const ExploreListItem = ({place}: PlaceListItemProps) => {
     // console.log("---")
 
     return (
-    <Link href={`/explore/${place.id}`} asChild>
-        <Pressable style={styles.container}>
-            <Image
-                // source={require('@assets/images/paris.png')}
-                // source={require('../../assets/images/paris.png')}
+    <View style={styles.shadow}>
+      <Link href={`/explore/${place.id}`} asChild>
+          <Pressable style={styles.container}>
+              <Image
+                  // no idea why this works like this
+                  // require ului din node nu ii plac chestiile dinamice si facea urat daca il aveam aici la compile time
+                  // dar pus in json merge, vedem noi cum o sa fie cand luam din baza de date chestiile
+                  source={place.image}
+                  style={styles.image}
+                  resizeMode="cover"
+              />
+          
+              <View style={styles.priceContainer}>
+                <Text style={styles.price}>{place.price}</Text>
+              </View>
+              <View style={styles.exploreContainer}>
+                <Text style={styles.title}>Explore {place.name}</Text>
+              </View>
 
-                source={place.image}
-                // source={require((place.image).toString())}
-                // source={{uri: require(place.image || defaultPlaceImage)}} 
-                // source={{uri: imagePath || defaultPlaceImage}} 
-                style={styles.image}
-                resizeMode="contain"
-            />
-        
-            <Text style={styles.title}>Explore {place.name}</Text>
-            <Text style={styles.price}>{place.price}</Text>
-        
-        </Pressable>
-    </Link>);
+          
+          </Pressable>
+
+
+      </Link>
+    </View>);
 
 }
 
@@ -44,28 +48,55 @@ const styles = StyleSheet.create({
   
     container: {
       backgroundColor: 'white',
-      padding: 20,
-      borderRadius: 40,
+      // padding: 40,
+      borderRadius: 20,
       flex: 1,
-      maxWidth: '100%',
+      // maxWidth: '100%',
+      position: 'relative',
+      overflow: 'hidden',
+      marginTop: 12,
+      marginHorizontal: 10,
+
+    },
+
+    shadow: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.4,
+      shadowRadius: 3,  
+      elevation: 5
     },
   
     image: {
-      width: 400,
-      height: 200,
-      borderColor: 'black',
-      borderWidth: 2,
-    //   aspectRatio: 1,
+      width: '100%',
+      height: 180 ,
+      //   aspectRatio: 1,
+    },
+
+    priceContainer: {
+      position: 'absolute',
+      backgroundColor: 'white',
+      padding: 7,
+      opacity: 0.80,
+      borderRadius: 25,
+      right: 12,
+      top: 8,
+    },
+
+    exploreContainer: {
+      height: 50,
+      justifyContent: 'center',
     },
   
     title: {
-      fontSize: 18,
-      fontWeight: '600',
+      fontSize: 17,
+      fontWeight: '500',
       marginVertical: 10,
+      left: 16,
     },
     
     price: {
-      color: Colors.light.tint,
-      fontWeight: 'bold',
+      color: 'black',
+      fontSize: 16,
     }
   });

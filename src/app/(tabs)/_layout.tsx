@@ -34,6 +34,7 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: "Explore",
+          headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
           
         }}

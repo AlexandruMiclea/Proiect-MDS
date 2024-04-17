@@ -1,5 +1,5 @@
 import { FlatList } from 'react-native';
-import places from '@assets/data/places-try'; // schimba aici gen scoate -try
+import places from '@assets/data/places'; // schimba aici gen scoate -try
 import ExploreListItem from '@components/ExploreListItem';
 
 export default function ExploreScreen() {
