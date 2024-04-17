@@ -1,8 +1,8 @@
 import 'react-native-url-polyfill/auto'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import Auth from '@components/Auth'
-import Account from '@/components/Account'
+import Auth from '@/app/(profile)/Auth'
+import Account from '@/app/(profile)/Account'
 import { View } from 'react-native'
 import { Session } from '@supabase/supabase-js'
 
@@ -21,7 +21,8 @@ export default function App() {
 
   return (
     <View>
-      {session && session.user ? <Account key={session.user.id} session={session} /> : <Auth />}
+      {/*if i am logged in, show my account, otherwise show the auth form*/
+        session && session.user ? <Account key={session.user.id} session={session} /> : <Auth />}
     </View>
   )
 }

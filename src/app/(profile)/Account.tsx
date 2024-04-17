@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Slider } from "react-native-elements";
-import { supabase } from "../lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { StyleSheet, View, Alert, ScrollView } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "./Avatar";
+import Avatar from "@/components/Avatar";
+import Profile_settings from "./profile_settings";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
@@ -172,6 +173,11 @@ export default function Account({ session }: { session: Session }) {
           disabled={loading}
         />
       </View>
+
+      <View style={styles.verticallySpaced}>
+        <Button title="Profile Settings" onPress={() => <> <Profile_settings key={session.user.id} session={session} /></>} />
+      </View>
+
 
       <View style={styles.verticallySpaced}>
         <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
