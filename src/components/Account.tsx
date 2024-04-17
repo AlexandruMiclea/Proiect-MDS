@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Slider } from '@react-native-community/slider'
+import { Slider } from "react-native-elements";
 import { supabase } from "../lib/supabase";
 import { StyleSheet, View, Alert, ScrollView } from "react-native";
 import { Button, Input } from "react-native-elements";
