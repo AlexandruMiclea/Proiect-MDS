@@ -1,21 +1,16 @@
 import { useState, useEffect } from "react";
-import { Slider } from "react-native-elements";
 import { supabase } from "@/lib/supabase";
-import { StyleSheet, View, Alert, ScrollView } from "react-native";
+import { StyleSheet, View, Alert, ScrollView, Pressable, Text } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
-import Profile_settings from "./profile_settings";
+import { useNavigation, Link, router} from "expo-router";
+import ProfileSettings from "./ProfileSettings";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [preferenceSport, setPreferenceSport] = useState("");
-  const [preferenceArt, setPreferenceArt] = useState("");
-  const [preferenceFood, setPreferenceFood] = useState("");
-  const [preferenceItineraryComplexity, setPreferenceItineraryComplexity] =
-    useState("");
 
   useEffect(() => {
     if (session) getProfile();
@@ -29,7 +24,7 @@ export default function Account({ session }: { session: Session }) {
       const { data, error, status } = await supabase
         .from("profiles")
         .select(
-          `username, avatar_url, preference_sports, preference_food, preference_arts, preference_itinerary_complexity`,
+          `username, avatar_url`, 
         )
         .eq("id", session?.user.id)
         .single();
@@ -41,10 +36,6 @@ export default function Account({ session }: { session: Session }) {
       if (data) {
         setUsername(data.username);
         setAvatarUrl(data.avatar_url);
-        setPreferenceSport(data.preference_sports);
-        setPreferenceArt(data.preference_arts);
-        setPreferenceFood(data.preference_food);
-        setPreferenceItineraryComplexity(data.preference_itinerary_complexity);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -55,48 +46,7 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  async function updateProfile({
-    username,
-    avatar_url,
-    preference_sports,
-    preference_arts,
-    preference_food,
-    preference_itinerary_complexity,
-  }: {
-    username: string;
-    avatar_url: string;
-    preference_sports: string;
-    preference_arts: string;
-    preference_food: string;
-    preference_itinerary_complexity: string;
-  }) {
-    try {
-      setLoading(true);
-      if (!session?.user) throw new Error("No user on the session!");
-
-      const updates = {
-        id: session?.user.id,
-        username,
-        avatar_url,
-        preference_sports,
-        preference_arts,
-        preference_food,
-        preference_itinerary_complexity,
-        updated_at: new Date(),
-      };
-      const { error } = await supabase.from("profiles").upsert(updates);
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
+  const navigation = useNavigation();
 
   return (
     <ScrollView style={styles.container}>
@@ -106,14 +56,6 @@ export default function Account({ session }: { session: Session }) {
           url={avatarUrl}
           onUpload={(url: string) => {
             setAvatarUrl(url);
-            updateProfile({
-              username,
-              avatar_url: url,
-              preference_sports: preferenceSport,
-              preference_arts: preferenceArt,
-              preference_food: preferenceFood,
-              preference_itinerary_complexity: preferenceItineraryComplexity,
-            });
           }}
         />
       </View>
@@ -124,60 +66,12 @@ export default function Account({ session }: { session: Session }) {
         <Input
           label="Username"
           value={username || ""}
-          onChangeText={(text) => setUsername(text)}
-        />
-      </View>
-      {/* TODO change to sliders */}
-      <View style={styles.verticallySpaced}>
-        <Input
-          label="Sport"
-          value={preferenceSport.toString() || ""}
-          onChangeText={(text) => setPreferenceSport(text)}
+          disabled
         />
       </View>
       <View style={styles.verticallySpaced}>
-        <Input
-          label="Art"
-          value={preferenceArt.toString() || ""}
-          onChangeText={(text) => setPreferenceArt(text)}
-        />
+        <Button title="Profile Settings" onPress={() => {router.navigate({pathname: "ProfileSettings", params: session})}} />
       </View>
-      <View style={styles.verticallySpaced}>
-        <Input
-          label="Food"
-          value={preferenceFood.toString() || ""}
-          onChangeText={(text) => setPreferenceFood(text)}
-        />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Input
-          label="Itinerary Complexity"
-          value={preferenceItineraryComplexity.toString() || ""}
-          onChangeText={(text) => setPreferenceItineraryComplexity(text)}
-        />
-      </View>
-
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          title={loading ? "Loading ..." : "Update"}
-          onPress={() =>
-            updateProfile({
-              username,
-              avatar_url: avatarUrl,
-              preference_sports: preferenceSport,
-              preference_arts: preferenceArt,
-              preference_food: preferenceFood,
-              preference_itinerary_complexity: preferenceItineraryComplexity,
-            })
-          }
-          disabled={loading}
-        />
-      </View>
-
-      <View style={styles.verticallySpaced}>
-        <Button title="Profile Settings" onPress={() => <> <Profile_settings key={session.user.id} session={session} /></>} />
-      </View>
-
 
       <View style={styles.verticallySpaced}>
         <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
@@ -200,4 +94,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-

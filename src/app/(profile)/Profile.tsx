@@ -6,7 +6,7 @@ import Account from '@/app/(profile)/Account'
 import { View } from 'react-native'
 import { Session } from '@supabase/supabase-js'
 
-export default function App() {
+export default function Profile() {
   const [session, setSession] = useState<Session | null>(null)
 
   useEffect(() => {
@@ -18,6 +18,8 @@ export default function App() {
       setSession(session)
     })
   }, [])
+
+  
 
   return (
     <View>

@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { Slider } from "react-native-elements";
 import { supabase } from "@/lib/supabase";
 import { StyleSheet, View, Alert, ScrollView } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
 
-export default function Profile_settings({ session }: { session: Session }) {
+export default function PreferenceSettings({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");

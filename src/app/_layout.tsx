@@ -51,7 +51,9 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" />
+        <Stack.Screen name="(profile)/Profile" options={{ headerShown: true, headerTitle: "Profile Page"}}/>
+        <Stack.Screen name="(profile)/ProfileSettings" options={{ headerShown: true, headerTitle: "Account Settings"}}/>
+        <Stack.Screen name="(profile)/PreferenceSettings" options={{ headerShown: true, headerTitle: "Trip Preferences"}}/>
       </Stack>
     </ThemeProvider>
   );
