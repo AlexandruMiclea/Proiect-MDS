@@ -49,10 +49,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="PackingList"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'New packing list',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome
+              name="suitcase"
+              size={size}
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>
