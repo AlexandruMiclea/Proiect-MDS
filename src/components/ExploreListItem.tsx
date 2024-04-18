@@ -1,5 +1,4 @@
 import { StyleSheet, Text, Image, Pressable, View } from 'react-native';
-import Colors from '@/constants/Colors';
 import { Place } from '@/types';
 import { Link } from 'expo-router';
 
@@ -64,7 +63,7 @@ const styles = StyleSheet.create({
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.4,
       shadowRadius: 3,  
-      elevation: 5
+      elevation: 5,
     },
   
     image: {
@@ -77,7 +76,7 @@ const styles = StyleSheet.create({
       position: 'absolute',
       backgroundColor: 'white',
       padding: 7,
-      opacity: 0.80,
+      opacity: 0.70,
       borderRadius: 25,
       right: 12,
       top: 8,

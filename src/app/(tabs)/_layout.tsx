@@ -36,6 +36,10 @@ export default function TabLayout() {
           title: "Explore",
           headerShown: false,
           tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
+          // tabBarStyle: {
+          //   display: "none",
+          // },
+          // tabBarButton: () => null
           
         }}
       />
