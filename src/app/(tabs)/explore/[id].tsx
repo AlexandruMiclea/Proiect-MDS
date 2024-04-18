@@ -1,9 +1,10 @@
-import { Text, View, Image, StyleSheet } from 'react-native';
+import { Text, View, Image, StyleSheet, Pressable } from 'react-native';
 import places from '@assets/data/places';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
+const buttons : string[] = ["General", "Attractions", "Traditions"];
 
 const PlaceDetailsScreen = () => {
 
@@ -28,38 +29,97 @@ const PlaceDetailsScreen = () => {
 
     const place = places.find((p) => p.id.toString() === id)
 
+    const [selectedButton, setSelectedButton] = useState<string>('General');
+
     if (!place) {
         return <Text>Place was not found! (error)</Text>
     }
 
     return (
-        <View style={styles.container}>
-            <Stack.Screen options={{title: `Explore ${place.name}`}}/>
-            <Image
-                  // no idea why this works like this
-                  // require ului din node nu ii plac chestiile dinamice si facea urat daca il aveam aici la compile time
-                  // dar pus in json merge, vedem noi cum o sa fie cand luam din baza de date chestiile
-                  source={place.image}
-                  style={styles.image}
-                  resizeMode="cover"
-              />
-            <Text>{place.name}, {place.country} 🧑</Text>
+      <View style={styles.container}>
+          <Stack.Screen 
+              options=
+                  {{
+                      title: `${place.name}, ${place.country}`,
+                      headerTitleStyle: {
+                          fontWeight: '700',
+                          fontSize: 13,
+                      }
+                  }}/>
+          <Image
+                source={place.image}
+                style={styles.image}
+                resizeMode="cover"
+            />
+
+        <View style={styles.buttons}>
+          {buttons.map(button => 
+            <Pressable
+              onPress={() => { setSelectedButton(button) }} 
+              style={[
+                styles.button, 
+                {
+                  backgroundColor: selectedButton === button ? 'gainsboro' : 'white'
+                }
+              ]} 
+              key={button}
+            >
+              <Text 
+                style={[
+                  styles.buttonText, 
+                  {
+                    color: selectedButton === button ? 'black' : 'gray'
+                  }
+                  ]}
+              >
+                {button}
+              </Text>
+            </Pressable>
+          )}
         </View>
 
+        <View style={styles.details}>
+
+
+        </View>
+
+      </View>
     );
-
-
 }
 
 export default PlaceDetailsScreen;
 
 const styles = StyleSheet.create({
 
-    image: {
-        top: 16,
-        width: '80%',
-        height: 200,
-        //   aspectRatio: 1,
-      },
+  container: {
+    backgroundColor: 'red',
+    alignItems: 'center',
+  },
+
+  image: {
+      top: 16,
+      width: '84%',
+      height: 200,
+      borderRadius: 15,
+    },
+
+    buttons: {
+      flexDirection: 'row',
+      marginVertical: 10,
+    },
+
+    button: {
+      width: '24%',
+      height: 36,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: 14,
+      marginTop: '8%',
+      borderRadius: 8,
+    },
+
+    buttonText: {
+
+    },
 
 });

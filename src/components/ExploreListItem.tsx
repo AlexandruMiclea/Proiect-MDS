@@ -8,10 +8,6 @@ type PlaceListItemProps = {
 
 const ExploreListItem = ({place}: PlaceListItemProps) => {
 
-    // console.log(typeof('@assets/images/paris.png'));
-    // console.log(place.image)
-    // console.log("---")
-
     return (
     <View style={styles.shadow}>
       <Link href={`/explore/${place.id}`} asChild>
