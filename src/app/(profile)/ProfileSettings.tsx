@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { StyleSheet, View, Alert, ScrollView } from "react-native";
+import { Text, Pressable, StyleSheet, View, Alert, ScrollView } from "react-native";
 import { Button, Input } from "react-native-elements";
 import Avatar from "@/components/Avatar";
 import { useAuth } from "../providers/AuthProvider";
@@ -84,9 +84,9 @@ export default function ProfileSettings() {
 
   return (
     <ScrollView style={styles.container}>
-      <View>
+      <View style = {styles.pressable}>
         <Avatar
-          size={200}
+          size={250}
           url={avatarUrl}
           onUpload={(url: string) => {
             setAvatarUrl(url);
@@ -117,20 +117,29 @@ export default function ProfileSettings() {
         />
       </View>
       
-      {/*mereu este Loading...*/}
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button
-          title={loading ? "Loading ..." : "Update"}
-          onPress={() =>
-            updateProfile({
-              username,
-              avatar_url: avatarUrl,
-              full_name: fullName,
-            })
-          }
-          disabled={loading}
-        />
-      </View>
+{/* Add by andrei*/}
+<View style={styles.buttonContainer}>
+  <Pressable
+    onPress={() => {
+      if (!loading) {
+        updateProfile({
+          username,
+          avatar_url: avatarUrl,
+          full_name: fullName,
+        });
+      }
+    }}
+    style={({ pressed }) => [
+      styles.pressable,
+      { backgroundColor: pressed ? 'green' : 'transparent' }
+    ]}
+    disabled={loading}
+  >
+    <Text style={[styles.text]}>
+      {loading ? "Loading ..." : "Update"}
+    </Text>
+  </Pressable>
+</View>
     </ScrollView>
   );
 }
@@ -147,6 +156,23 @@ const styles = StyleSheet.create({
   },
   mt20: {
     marginTop: 20,
+  },
+  pressable: {
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    alignSelf: "stretch",
+    borderRadius: 8,
+    backgroundColor: '#7975F8',
   },
 });
 

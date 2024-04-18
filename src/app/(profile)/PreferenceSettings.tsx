@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Text, StyleSheet, View, Alert, ScrollView} from "react-native";
+import { Pressable, Text, StyleSheet, View, Alert, ScrollView} from "react-native";
 import { Button, Input, Slider } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
@@ -97,7 +97,7 @@ export default function PreferenceSettings() {
           value={PreferenceArts}
           minimumValue={0}
           maximumValue={4}
-          minimumTrackTintColor="brown"
+          minimumTrackTintColor="#7975F8"
           step={1}
           thumbStyle={styles.sliderThumb}
           trackStyle={styles.sliderTrack}
@@ -112,7 +112,7 @@ export default function PreferenceSettings() {
           value={PreferenceFood}
           minimumValue={0}
           maximumValue={4}
-          minimumTrackTintColor="brown"
+          minimumTrackTintColor="#7975F8"
           step={1}
           thumbStyle={styles.sliderThumb}
           trackStyle={styles.sliderTrack}
@@ -127,7 +127,7 @@ export default function PreferenceSettings() {
           value={PreferenceSport}
           minimumValue={0}
           maximumValue={4}
-          minimumTrackTintColor="brown"
+          minimumTrackTintColor="#7975F8"
           step={1}
           thumbStyle={styles.sliderThumb}
           trackStyle={styles.sliderTrack}
@@ -142,7 +142,7 @@ export default function PreferenceSettings() {
           value={ItineraryComplexity}
           minimumValue={0}
           maximumValue={4}
-          minimumTrackTintColor="brown"
+          minimumTrackTintColor="#7975F8"
           step={1}
           thumbStyle={styles.sliderThumb}
           trackStyle={styles.sliderTrack}
@@ -150,20 +150,27 @@ export default function PreferenceSettings() {
         />
       </View>
   
-      <View style={[styles.verticallySpaced, styles.mt20, styles.button]}>
-        <Button
-          title={loading ? "Loading ..." : "Update"}
-          onPress={() =>
-            updateProfile({
-              preference_arts: PreferenceArts,
-              preference_food: PreferenceFood,
-              preference_sports: PreferenceSport,
-              preference_itinerary_complexity: ItineraryComplexity,
-            })
-          }
-          disabled={loading}
-        />
-      </View>
+{/* Add by andrei*/}
+<View style={styles.buttonContainer}>
+  <Pressable
+    onPress={() =>
+      updateProfile({
+        preference_arts: PreferenceArts,
+        preference_food: PreferenceFood,
+        preference_sports: PreferenceSport,
+        preference_itinerary_complexity: ItineraryComplexity,
+      })}
+    style={({ pressed }) => [
+      styles.pressable,
+      { backgroundColor: pressed ? 'green' : 'transparent' }
+    ]}
+    disabled={loading}
+  >
+    <Text style={[styles.text]}>
+      {loading ? "Loading ..." : "Update"}
+    </Text>
+  </Pressable>
+</View>
     </ScrollView>
   );
 }
@@ -196,7 +203,7 @@ const styles = StyleSheet.create({
 
   },
   sliderThumb: {
-    backgroundColor: 'brown',
+    backgroundColor: '#7975F8',
   },
   sliderTrack: {
     height: 10,
@@ -206,6 +213,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'brown',
     color: 'white',
     fontWeight: 'bold',
-
-  }
+  },
+  pressable: {
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    alignSelf: "stretch",
+    borderRadius: 8,
+    backgroundColor: '#7975F8',
+  },
 });

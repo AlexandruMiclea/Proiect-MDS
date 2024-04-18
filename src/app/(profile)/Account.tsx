@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { StyleSheet, View, Alert, ScrollView } from "react-native";
+import { Text, Pressable, StyleSheet, View, Alert, ScrollView } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
@@ -50,15 +50,15 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <ScrollView style={styles.container}>
-      <View>
-        <Avatar
-          size={200}
-          url={avatarUrl}
-          onUpload={(url: string) => {
-            setAvatarUrl(url);
-          }}
-        />
-      </View>
+      <View style={styles.avatarContainer}>
+    <Avatar
+      size={200}
+      url={avatarUrl}
+      onUpload={(url: string) => {
+        setAvatarUrl(url);
+      }}
+    />
+  </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input label="Email" value={session?.user?.email} disabled />
       </View>
@@ -69,17 +69,47 @@ export default function Account({ session }: { session: Session }) {
           disabled
         />
       </View>
-      <View style={styles.verticallySpaced}>
-        <Button title="Profile Settings" onPress={() => {router.navigate({pathname: "ProfileSettings", params: session})}} />
-      </View>
-        {/* add by andrei*/}
-      <View style={styles.verticallySpaced}>
-        <Button title="Preference Settings" onPress={() => {router.navigate({pathname: "PreferenceSettings", params: session})}} />
-      </View>
 
-      <View style={styles.verticallySpaced}>
-        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
-      </View>
+
+{/* Add by andrei*/}
+<View style={styles.buttonContainer}>
+  <Pressable
+    onPress={() => {router.navigate({pathname: "ProfileSettings", params: session})}}
+    style={({ pressed }) => [
+      styles.pressable
+    ]}>
+    <Text style={[styles.text]}> Profile Settings </Text>
+  </Pressable>
+</View>
+
+
+{/* Add by andrei*/}
+<View style={styles.buttonContainer}>
+  <Pressable
+    onPress={() => {router.navigate({pathname: "PreferenceSettings", params: session})}}
+    style={({ pressed }) => [
+      styles.pressable
+    ]}
+  >
+    <Text style={[styles.text]}>
+      Preference Settings
+    </Text>
+  </Pressable>
+</View>
+
+{/* Add by andrei*/}
+<View style={styles.signOut}>
+  <Pressable
+      onPress={() => supabase.auth.signOut()}
+    style={({ pressed }) => [
+      styles.pressable
+    ]}
+  >
+    <Text style={[styles.text]}>
+      Sign Out
+    </Text>
+  </Pressable>
+</View>
     </ScrollView>
   );
 }
@@ -96,5 +126,42 @@ const styles = StyleSheet.create({
   },
   mt20: {
     marginTop: 20,
+  },
+  button_container: {
+    marginTop: 20,
+    backgroundColor: 'brown',
+    overlayColor: 'black',
+    paddingTop: 4,
+    paddingBottom: 4,
+    alignSelf: "stretch",
+  },
+  avatarContainer: {
+    alignItems: "center",
+    paddingTop: 20,
+    paddingBottom: 20,
+    borderRadius: 100,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    alignSelf: "stretch",
+    borderRadius: 8,
+    backgroundColor: '#7975F8',
+  },
+  signOut: {
+    marginTop: 20,
+    alignSelf: "stretch",
+    borderRadius: 8,
+    backgroundColor: 'brown',
+  },
+  pressable: {
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
