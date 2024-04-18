@@ -3,7 +3,6 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
-
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
@@ -13,7 +12,7 @@ function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome size={26} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
@@ -27,34 +26,43 @@ export default function TabLayout() {
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
       }}>
+
+      <Tabs.Screen name="index" options={{href: null}}/>
+        
       <Tabs.Screen
-        name="index"
+        name="explore"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/Profile" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome5
-                    name="user-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          title: "Explore",
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
+          // tabBarStyle: {
+          //   display: "none",
+          // },
+          // tabBarButton: () => null
+          
+        }}
+      />
+      <Tabs.Screen
+        name="PackingList"
+        options={{
+          title: 'New packing list',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome
+              name="suitcase"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
-      <Tabs.Screen
+
+        <Tabs.Screen
+
         name="map"
         options={{
           title: 'Map',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />}}/>,
+
     </Tabs>
   );
 }
