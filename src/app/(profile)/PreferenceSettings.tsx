@@ -26,7 +26,7 @@ export default function PreferenceSettings() {
       const { data, error, status } = await supabase
         .from("profiles")
         .select(
-          `username, avatar_url, preference_sportss, preference_food, preference_arts, preference_itinerary_complexity`
+          `username, avatar_url, preference_sports, preference_food, preference_arts, preference_itinerary_complexity`
         )
         .eq("id", session?.user.id)
         .single();
