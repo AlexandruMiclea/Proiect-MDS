@@ -26,7 +26,7 @@ export default function PreferenceSettings() {
       const { data, error, status } = await supabase
         .from("profiles")
         .select(
-          `username, avatar_url, preference_sport, preference_food, preference_arts, preference_itinerary_complexity`,
+          `username, avatar_url, preference_sports, preference_food, preference_arts, preference_itinerary_complexity`,
         )
         .eq("id", session?.user.id)
         .single();
@@ -36,7 +36,7 @@ export default function PreferenceSettings() {
       }
 
       if (data) {
-        setPreferenceSport(data.preference_sport);
+        setPreferenceSport(data.preference_sports);
         setPreferenceFood(data.preference_food);
         setPreferenceArts(data.preference_arts);
         setItineraryComplexity(data.preference_itinerary_complexity);
@@ -51,12 +51,12 @@ export default function PreferenceSettings() {
   }
 
   async function updateProfile({
-    preference_sport,
+    preference_sports,
     preference_food,
     preference_arts,
     preference_itinerary_complexity,
   }: {
-    preference_sport: number;
+    preference_sports: number;
     preference_food: number;
     preference_arts: number;
     preference_itinerary_complexity: number;
@@ -67,7 +67,7 @@ export default function PreferenceSettings() {
 
       const updates = {
         id: session?.user.id,
-        preference_sport,
+        preference_sports,
         preference_food,
         preference_arts,
         preference_itinerary_complexity,
@@ -157,7 +157,7 @@ export default function PreferenceSettings() {
             updateProfile({
               preference_arts: PreferenceArts,
               preference_food: PreferenceFood,
-              preference_sport: PreferenceSport,
+              preference_sports: PreferenceSport,
               preference_itinerary_complexity: ItineraryComplexity,
             })
           }
