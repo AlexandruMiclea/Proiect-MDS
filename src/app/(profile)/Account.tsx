@@ -72,6 +72,10 @@ export default function Account({ session }: { session: Session }) {
       <View style={styles.verticallySpaced}>
         <Button title="Profile Settings" onPress={() => {router.navigate({pathname: "ProfileSettings", params: session})}} />
       </View>
+        {/* add by andrei*/}
+      <View style={styles.verticallySpaced}>
+        <Button title="Preference Settings" onPress={() => {router.navigate({pathname: "PreferenceSettings", params: session})}} />
+      </View>
 
       <View style={styles.verticallySpaced}>
         <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />

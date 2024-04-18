@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { StyleSheet, View, Alert, ScrollView } from "react-native";
-import { Button, Input } from "react-native-elements";
+import { Text, StyleSheet, View, Alert, ScrollView} from "react-native";
+import { Button, Input, Slider } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
+import { useAuth } from "../providers/AuthProvider";
 
-export default function PreferenceSettings({ session }: { session: Session }) {
+export default function PreferenceSettings() {
+  const { session } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [PreferenceSport, setPreferenceSport] = useState(0);
+  const [PreferenceFood, setPreferenceFood] = useState(0);
+  const [PreferenceArts, setPreferenceArts] = useState(0);
+  const [ItineraryComplexity, setItineraryComplexity] = useState(0);
 
   useEffect(() => {
     if (session) getProfile();
@@ -22,7 +26,7 @@ export default function PreferenceSettings({ session }: { session: Session }) {
       const { data, error, status } = await supabase
         .from("profiles")
         .select(
-          `username, avatar_url`,
+          `username, avatar_url, preference_sport, preference_food, preference_arts, preference_itinerary_complexity`,
         )
         .eq("id", session?.user.id)
         .single();
@@ -32,8 +36,10 @@ export default function PreferenceSettings({ session }: { session: Session }) {
       }
 
       if (data) {
-        setUsername(data.username);
-        setAvatarUrl(data.avatar_url);
+        setPreferenceSport(data.preference_sport);
+        setPreferenceFood(data.preference_food);
+        setPreferenceArts(data.preference_arts);
+        setItineraryComplexity(data.preference_itinerary_complexity);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -45,11 +51,15 @@ export default function PreferenceSettings({ session }: { session: Session }) {
   }
 
   async function updateProfile({
-    username,
-    avatar_url,
+    preference_sport,
+    preference_food,
+    preference_arts,
+    preference_itinerary_complexity,
   }: {
-    username: string;
-    avatar_url: string;
+    preference_sport: number;
+    preference_food: number;
+    preference_arts: number;
+    preference_itinerary_complexity: number;
   }) {
     try {
       setLoading(true);
@@ -57,8 +67,10 @@ export default function PreferenceSettings({ session }: { session: Session }) {
 
       const updates = {
         id: session?.user.id,
-        username,
-        avatar_url,
+        preference_sport,
+        preference_food,
+        preference_arts,
+        preference_itinerary_complexity,
         updated_at: new Date(),
       };
       const { error } = await supabase.from("profiles").upsert(updates);
@@ -77,38 +89,76 @@ export default function PreferenceSettings({ session }: { session: Session }) {
 
   return (
     <ScrollView style={styles.container}>
-      <View>
-        <Avatar
-          size={200}
-          url={avatarUrl}
-          onUpload={(url: string) => {
-            setAvatarUrl(url);
-            updateProfile({
-              username,
-              avatar_url: url
-            });
-          }}
-        />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input label="Email" value={session?.user?.email} disabled />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Input
-          label="Username"
-          value={username || ""}
-          onChangeText={(text) => setUsername(text)}
-        />
-      </View>
-      
+      {/* Sliders for Arts */}
 
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+      <View style={styles.sliderContiner}>
+        <Text style={styles.sliderTitle}>Preferences in Art</Text>
+        <Slider
+          value={PreferenceArts}
+          minimumValue={0}
+          maximumValue={4}
+          minimumTrackTintColor="brown"
+          step={1}
+          thumbStyle={styles.sliderThumb}
+          trackStyle={styles.sliderTrack}
+          onValueChange={(value) => setPreferenceArts(value)}
+        />
+      </View>
+  
+      {/* Sliders for Food */}
+      <View style={styles.sliderContiner}>
+        <Text style={styles.sliderTitle}>Preferences in Food</Text>
+        <Slider 
+          value={PreferenceFood}
+          minimumValue={0}
+          maximumValue={4}
+          minimumTrackTintColor="brown"
+          step={1}
+          thumbStyle={styles.sliderThumb}
+          trackStyle={styles.sliderTrack}
+          onValueChange={(value) => setPreferenceFood(value)}
+        />
+      </View>
+  
+      {/* Sliders for Sports */}
+      <View style={styles.sliderContiner}>
+        <Text style={styles.sliderTitle}>Preferences in Sports</Text>
+        <Slider 
+          value={PreferenceSport}
+          minimumValue={0}
+          maximumValue={4}
+          minimumTrackTintColor="brown"
+          step={1}
+          thumbStyle={styles.sliderThumb}
+          trackStyle={styles.sliderTrack}
+          onValueChange={(value) => setPreferenceSport(value)}
+        />
+      </View>
+  
+      {/* Sliders for Itinerary Complexity */}
+      <View style={styles.sliderContiner}>
+        <Text style={styles.sliderTitle}>Itinerary Complexity</Text>
+        <Slider 
+          value={ItineraryComplexity}
+          minimumValue={0}
+          maximumValue={4}
+          minimumTrackTintColor="brown"
+          step={1}
+          thumbStyle={styles.sliderThumb}
+          trackStyle={styles.sliderTrack}
+          onValueChange={(value) => setItineraryComplexity(value)}
+        />
+      </View>
+  
+      <View style={[styles.verticallySpaced, styles.mt20, styles.button]}>
         <Button
           title={loading ? "Loading ..." : "Update"}
           onPress={() =>
             updateProfile({
-              username,
-              avatar_url: avatarUrl,
+              preference_arts: PreferenceArts,
+              preference_food: PreferenceFood,
+              preference_sport: PreferenceSport,
+              preference_itinerary_complexity: ItineraryComplexity,
             })
           }
           disabled={loading}
@@ -123,13 +173,40 @@ const styles = StyleSheet.create({
     marginTop: 40,
     padding: 12,
   },
+  sliderContiner: {
+    padding: 12,
+  },
   verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
+    paddingTop: 10,
+    paddingBottom: 10,
     alignSelf: "stretch",
   },
   mt20: {
     marginTop: 20,
   },
+  sliderTitle: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 10, // Add spacing between title and slider
+  },
+  slider: {
+    fontSize: 2,
+    fontWeight: 'bold',
+
+  },
+  sliderThumb: {
+    backgroundColor: 'brown',
+  },
+  sliderTrack: {
+    height: 10,
+    borderRadius: 10,
+  },
+  button:{
+    backgroundColor: 'brown',
+    color: 'white',
+    fontWeight: 'bold',
+
+  }
 });
 

@@ -10,6 +10,7 @@ export default function ProfileSettings() {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [fullName, setFullName] = useState("");
 
   useEffect(() => {
     if (session) getProfile();
@@ -23,7 +24,7 @@ export default function ProfileSettings() {
       const { data, error, status } = await supabase
         .from("profiles")
         .select(
-          `username, avatar_url`,
+          `username, avatar_url,full_name`,
         )
         .eq("id", session?.user.id)
         .single();
@@ -35,12 +36,14 @@ export default function ProfileSettings() {
       if (data) {
         setUsername(data.username);
         setAvatarUrl(data.avatar_url);
+        setFullName(data.full_name);
       }
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert(error.message);
       }
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   }
@@ -48,9 +51,11 @@ export default function ProfileSettings() {
   async function updateProfile({
     username,
     avatar_url,
+    full_name,
   }: {
     username: string;
     avatar_url: string;
+    full_name: string;
   }) {
     try {
       setLoading(true);
@@ -60,6 +65,7 @@ export default function ProfileSettings() {
         id: session?.user.id,
         username,
         avatar_url,
+        full_name,
         updated_at: new Date(),
       };
       const { error } = await supabase.from("profiles").upsert(updates);
@@ -86,7 +92,8 @@ export default function ProfileSettings() {
             setAvatarUrl(url);
             updateProfile({
               username,
-              avatar_url: url
+              avatar_url: url,
+              full_name: fullName,
             });
           }}
         />
@@ -101,8 +108,16 @@ export default function ProfileSettings() {
           onChangeText={(text) => setUsername(text)}
         />
       </View>
+      {/* Add full name input field _andrei*/}
+      <View style={styles.verticallySpaced}>
+        <Input
+          label="Full Name"
+          value={fullName || ""}
+          onChangeText={(text) => setFullName(text)}
+        />
+      </View>
       
-
+      {/*mereu este Loading...*/}
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           title={loading ? "Loading ..." : "Update"}
@@ -110,6 +125,7 @@ export default function ProfileSettings() {
             updateProfile({
               username,
               avatar_url: avatarUrl,
+              full_name: fullName,
             })
           }
           disabled={loading}
