@@ -3,6 +3,9 @@ import places from '@assets/data/places';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import PlaceGeneral from '@/components/PlaceGeneral';
+import PlaceAttractions from '@/components/PlaceAttractions';
+import PlaceTraditions from '@/components/PlaceTraditions';
 
 const buttons : string[] = ["General", "Attractions", "Traditions"];
 
@@ -59,7 +62,8 @@ const PlaceDetailsScreen = () => {
               style={[
                 styles.button, 
                 {
-                  backgroundColor: selectedButton === button ? 'gainsboro' : 'white'
+                  backgroundColor: selectedButton === button ? 'white' : '#7975F8'
+                  
                 }
               ]} 
               key={button}
@@ -68,7 +72,8 @@ const PlaceDetailsScreen = () => {
                 style={[
                   styles.buttonText, 
                   {
-                    color: selectedButton === button ? 'black' : 'gray'
+                    color: selectedButton === button ? '#7975F8' : 'white',
+                    fontWeight: selectedButton === button ? '700' : '500',
                   }
                   ]}
               >
@@ -78,9 +83,12 @@ const PlaceDetailsScreen = () => {
           )}
         </View>
 
-        <View style={styles.details}>
+        {/* todo sytling la astea si sa apara info care trebuie*/}
 
-
+        <View style={{ marginTop: 20 }}>
+          {selectedButton === "General" && <PlaceGeneral />}
+          {selectedButton === "Attractions" && <PlaceAttractions />}
+          {selectedButton === "Traditions" && <PlaceTraditions />}
         </View>
 
       </View>
@@ -92,7 +100,7 @@ export default PlaceDetailsScreen;
 const styles = StyleSheet.create({
 
   container: {
-    backgroundColor: 'red',
+    backgroundColor: 'gainsboro',
     alignItems: 'center',
   },
 
@@ -116,10 +124,12 @@ const styles = StyleSheet.create({
       marginHorizontal: 14,
       marginTop: '8%',
       borderRadius: 8,
+      borderColor: '#7975F8',
+      borderWidth: 1,
     },
 
     buttonText: {
-
+      fontSize: 15,
     },
 
 });
