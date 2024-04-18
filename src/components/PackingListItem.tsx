@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 
+//to do: scrollable, drag and droppable, maybe make categories
 interface PackingListItemProps {
     item: {
       id: string;
@@ -83,17 +84,8 @@ const styles = StyleSheet.create({
         maxWidth: '70%',
     },
     lineThrough: {
-        textDecorationLine: 'line-through', // Apply line-through style conditionally
-        color: 'gray', // Additional styling for checked items (optional)
-    },
-    title: {
-      fontSize: 20,
-      fontWeight: 'bold',
-    },
-    separator: {
-      marginVertical: 30,
-      height: 1,
-      width: '80%',
+        textDecorationLine: 'line-through', 
+        color: 'gray', 
     },
   });
   

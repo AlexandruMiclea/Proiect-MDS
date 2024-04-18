@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View, Image, TouchableOpacity} from 'react-native';
 import { Text } from '@/components/Themed';
 import PackingListItem from '@/components/PackingListItem';
+
 
 interface Item {
   id: string;
@@ -12,6 +13,8 @@ interface Item {
 const PackingListLayout = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [text, setText] = useState('');
+  const [isCelsiusActive, setIsCelsiusActive] = useState(true);
+  const [temperature, setTemperature] = useState(29);
 
   const addItem = () => {
     if (text === '') return;
@@ -34,9 +37,43 @@ const PackingListLayout = () => {
     setItems(items.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)));
   };
 
+  const calculateProgress = () => {
+    const checkedCount = items.filter((item) => item.checked).length;
+    const totalCount = items.length;
+    if (totalCount > 0){
+      return (checkedCount / totalCount * 100).toFixed(0);
+    }
+    return 0;
+  }
+  const toggleTemperatureUnit = () => {
+    setIsCelsiusActive(!isCelsiusActive);
+    if (isCelsiusActive) {
+      setTemperature((temperature * 9) / 5 + 32);
+    } else {
+      setTemperature((temperature - 32) / 1.8);
+    }
+  };
+  const progress = calculateProgress();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create a new packing list for your next trip!</Text>
+      <Image source={require("../../../../assets/images/stockholm.png")} style={styles.image}/>
+      <View style={styles.listContainer}>
+      <Text style={styles.title}>Stockholm, Sweeden</Text>
+      <View style={styles.detailsContainer}>
+        <View>
+          <Text style={styles.dates}>Jul 20 - Jul 24</Text>
+          <Text style={styles.progress}>Progress: {progress}%</Text>
+        </View>
+        <View style={styles.temperatureContainer}>
+          <Text style={styles.weather}>{temperature}</Text>
+            <TouchableOpacity onPress={toggleTemperatureUnit}>
+              <Text style={[styles.weather, !isCelsiusActive && styles.inactiveText]}>°C</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleTemperatureUnit}>
+              <Text style={[styles.weather, isCelsiusActive && styles.inactiveText]}> | °F </Text>
+            </TouchableOpacity>  
+        </View>
+      </View>
       <TextInput
         style={styles.input}
         onChangeText={setText}
@@ -44,7 +81,7 @@ const PackingListLayout = () => {
         placeholder="Add an item"
         onSubmitEditing={addItem}
       />
-      <View style={styles.itemsContainer}>
+      <ScrollView contentContainerStyle={styles.itemsContainer}>
         {items.map((item) => (
           <PackingListItem
             key={item.id}
@@ -54,6 +91,7 @@ const PackingListLayout = () => {
             toggleChecked={toggleChecked}
           />
         ))}
+      </ScrollView>
       </View>
     </View>
   );
@@ -61,32 +99,63 @@ const PackingListLayout = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'flex-start',
+  },
+  listContainer:{
+    width:'100%',
+    padding:20
   },
   title: {
     color: 'black',
-    padding: 20,
     fontSize: 20,
     fontWeight: 'bold',
+    marginBottom:10,
+  },
+  detailsContainer:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dates: {
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    marginBottom:10,
+  },
+  progress:{
+    color: '#7478fc',
+    marginBottom: 10,
+    fontWeight:'900'
+  },
+  temperatureContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  weather: {
+    fontSize: 27,
+    fontWeight:'500'
+  },
+  inactiveText:{
+    color:'#c2c0c0',
   },
   input: {
     borderRadius: 50,
     height: 50,
-    width: '90%',
     borderColor: 'lightgray',
     borderWidth: 1,
     padding: 10,
     marginBottom: 10,
   },
   itemsContainer: {
-    width: '90%',
-    flexGrow: 1,
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  image: {
+    width:"100%",
+    height: 150,
+  }
 });
 
 export default PackingListLayout;
