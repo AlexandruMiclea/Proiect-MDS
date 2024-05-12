@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 
 type DropdownProps = {
   label: string;
@@ -9,6 +10,7 @@ type DropdownProps = {
   labelField: string;
   valueField: string;
   onChange: null | ((item: string) => void);
+  iconName: string;
 }
 
 
@@ -20,6 +22,8 @@ const DropdownComponent = (props: DropdownProps) => {
   const labelField = props.labelField;
   const valueField = props.valueField;
   const propsOnChange = props.onChange;
+
+  const iconName = props.iconName;
 
   const renderLabel = () => {
     if (value || isFocus) {
@@ -43,7 +47,7 @@ const DropdownComponent = (props: DropdownProps) => {
         iconStyle={styles.iconStyle}
         data={data}
         search
-        maxHeight={300}
+        maxHeight={320}
         labelField={labelField}
         valueField={valueField}
         placeholder={!isFocus ? `Select ${props.label}` : '...'}
@@ -59,10 +63,10 @@ const DropdownComponent = (props: DropdownProps) => {
           }
         }}
         renderLeftIcon={() => (
-          <AntDesign
+          <MaterialCommunityIcons
             style={styles.icon}
             color={isFocus ? 'blue' : 'black'}
-            name="Safety"
+            name={iconName}
             size={20}
           />
         )}
@@ -99,6 +103,7 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    marginLeft: 8,
   },
   selectedTextStyle: {
     fontSize: 16,
