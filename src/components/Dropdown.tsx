@@ -3,26 +3,27 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-const data = [
-  { label: 'Item 1', value: '1' },
-  { label: 'Item 2', value: '2' },
-  { label: 'Item 3', value: '3' },
-  { label: 'Item 4', value: '4' },
-  { label: 'Item 5', value: '5' },
-  { label: 'Item 6', value: '6' },
-  { label: 'Item 7', value: '7' },
-  { label: 'Item 8', value: '8' },
-];
+type DropdownProps = {
+  label: string;
+  dropdownData: [Object];
+  labelField: string;
+  valueField: string;
+}
 
-const DropdownComponent = () => {
+
+const DropdownComponent = (props: DropdownProps) => {
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
+
+  const data = props.dropdownData;
+  const labelField = props.labelField;
+  const valueField = props.valueField;
 
   const renderLabel = () => {
     if (value || isFocus) {
       return (
         <Text style={[styles.label, isFocus && { color: 'blue' }]}>
-          Dropdown label
+          { props.label.charAt(0).toUpperCase() + props.label.slice(1)}
         </Text>
       );
     }
@@ -41,15 +42,15 @@ const DropdownComponent = () => {
         data={data}
         search
         maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder={!isFocus ? 'Select item' : '...'}
+        labelField={labelField}
+        valueField={valueField}
+        placeholder={!isFocus ? `Select ${props.label}` : '...'}
         searchPlaceholder="Search..."
         value={value}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={item => {
-          setValue(item.value);
+          setValue(item.name);
           setIsFocus(false);
         }}
         renderLeftIcon={() => (
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   icon: {
-    marginRight: 5,
+    marginLeft: 4,
   },
   label: {
     position: 'absolute',
@@ -96,6 +97,7 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
+    marginLeft: 8,
   },
   iconStyle: {
     width: 20,
@@ -104,5 +106,6 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+    borderRadius: 5,
   },
 });

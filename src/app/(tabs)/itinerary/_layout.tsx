@@ -1,50 +1,27 @@
 import React from "react";
 import DropdownComponent from "@/components/Dropdown";
-import { View, StyleSheet, Pressable } from "react-native";
-import { Button } from 'react-native-paper';
-import { DatePickerModal } from "react-native-paper-dates";
-import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
+import { View, StyleSheet, Pressable, Text } from "react-native";
 
+import countriesDataJson from '@assets/data/countriesNames.json';
+import Calendar from "@/components/Calendar";
+
+const countriesData = JSON.parse(JSON.stringify(countriesDataJson));
 
 const NewItinerary = () => {
 
-  const [range, setRange] = React.useState<{ startDate: Date | undefined, endDate: Date | undefined }>({ startDate: undefined, endDate: undefined });
-
-  const [open, setOpen] = React.useState(false);
-
-  const onDismiss = React.useCallback(() => {
-    setOpen(false);
-  }, [setOpen]);
-
-  const onConfirm = React.useCallback(
-    ({ startDate, endDate }: { startDate: CalendarDate, endDate: CalendarDate }) => {
-      setOpen(false);
-      setRange({ startDate: startDate, endDate: endDate });
-    },
-    [setOpen, setRange]
-  );
 
   return (
       <View>
-        <DropdownComponent></DropdownComponent>
-        <DropdownComponent></DropdownComponent>
-          <Pressable onPress={() => setOpen(true)} style={{justifyContent: 'center', flex: 1, alignItems: 'center', marginTop: 300}}>
-            <Button style={styles.button} onPress={() => setOpen(true)} uppercase={false} mode="outlined">
-              Pick range
-            </Button>
-            <DatePickerModal
-              disableStatusBarPadding
-              locale="en"
-              mode="range"
-              visible={open}
-              onDismiss={onDismiss}
-              startDate={range.startDate}
-              endDate={range.endDate}
-              onConfirm={onConfirm}
-              startYear={2023}
-              endYear={2024}
-            />
-        </Pressable>
+        <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesData}></DropdownComponent>
+        {/* <DropdownComponent label='city'></DropdownComponent> */}
+        {/* aici pretty much trebuie sa fac un context / un provider ceva astfel incat cand se schimba tara selectata sa trimit in
+            al 2 lea dropdown orasele tarii respective */}
+        <View>
+            <Calendar></Calendar> 
+            {/* e nevoie fix de acelasi lucru ca la dropdown si aici ca sa am acces la datele de inceput / final selectate de user */}
+        </View>
+          
+            
       </View>
       
 )}
@@ -55,7 +32,10 @@ export default NewItinerary;
 const styles = StyleSheet.create({
   button: {
     backgroundColor: 'gray',
-    padding: 16,
+    padding: 10,
+    justifyContent: 'center', 
+    flex: 1, 
+    alignItems: 'center', 
   },
   dropdown: {
     height: 50,
