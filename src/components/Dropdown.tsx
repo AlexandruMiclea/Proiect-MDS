@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-
+import { useColorScheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
 
 type DropdownProps = {
   label: string;
   dropdownData: [Object];
   labelField: string;
   valueField: string;
-  onChange: null | ((item: string) => void);
+  onChange: (item: string) => void;
   iconName: string;
 }
 
@@ -17,6 +18,9 @@ type DropdownProps = {
 const DropdownComponent = (props: DropdownProps) => {
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
+
+  const colorScheme = useColorScheme();
+  const mainColor = Colors[colorScheme ?? 'light'].tint;
 
   const data = props.dropdownData;
   const labelField = props.labelField;
@@ -28,7 +32,7 @@ const DropdownComponent = (props: DropdownProps) => {
   const renderLabel = () => {
     if (value || isFocus) {
       return (
-        <Text style={[styles.label, isFocus && { color: 'blue' }]}>
+        <Text style={[styles.label, isFocus && { color: mainColor }]}>
           { props.label.charAt(0).toUpperCase() + props.label.slice(1)}
         </Text>
       );
@@ -40,7 +44,7 @@ const DropdownComponent = (props: DropdownProps) => {
     <View style={styles.container}>
       {renderLabel()}
       <Dropdown
-        style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+        style={[styles.dropdown, isFocus && { borderColor: mainColor }]}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         inputSearchStyle={styles.inputSearchStyle}
@@ -58,14 +62,12 @@ const DropdownComponent = (props: DropdownProps) => {
         onChange={item => {
           setValue(item.name);
           setIsFocus(false);
-          if (propsOnChange) {
-            propsOnChange(item.name);
-          }
+          propsOnChange(item.name);
         }}
         renderLeftIcon={() => (
           <MaterialCommunityIcons
             style={styles.icon}
-            color={isFocus ? 'blue' : 'black'}
+            color={isFocus ? mainColor : 'black'}
             name={iconName}
             size={20}
           />
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     borderColor: 'gray',
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
   },
