@@ -22,8 +22,6 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
       }}
     >
@@ -37,6 +35,17 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
         }}
       />
+
+      <Tabs.Screen
+        name="itinerary"
+        options={{
+          title: 'New itinerary',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="plane" size={size} color={color} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="PackingList"
         options={{
@@ -51,7 +60,7 @@ export default function TabLayout() {
         name="map"
         options={{
           title: 'Map',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="globe" color={color} />,
         }}
       />
     </Tabs>
