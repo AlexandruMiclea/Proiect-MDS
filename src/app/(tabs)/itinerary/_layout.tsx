@@ -79,7 +79,8 @@ const NewItinerary = () => {
 
         <View style={styles.createButtonContainer}>
           {/* aici trebuie sa adaugati voi onPress la touchableopacity sa faca ce vreti voi
-              datele de care aveti nevoie sunt country, city, range.startDate, range.endDate si budget*/}
+              datele de care aveti nevoie sunt country, city, range.startDate, range.endDate si budget
+              in functia de la onpress sa faceti un for care trece prin countriescities[country] si salveaza info despre orasu respectiv*/}
           <TouchableOpacity 
             onPress ={logInfo}
             style={[styles.createButton, {backgroundColor: mainColor}]
