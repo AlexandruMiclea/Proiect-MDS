@@ -1,21 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import DropdownComponent from "@/components/Dropdown";
 import { View, StyleSheet, Pressable, Text } from "react-native";
-
-import countriesDataJson from '@assets/data/countriesNames.json';
+import countriesNamesJson from '@assets/data/countriesNames.json';
+import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import Calendar from "@/components/Calendar";
 
-const countriesData = JSON.parse(JSON.stringify(countriesDataJson));
+const countriesNames = JSON.parse(JSON.stringify(countriesNamesJson));
+const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
 const NewItinerary = () => {
 
+  const [country, setCountry] = useState<string>('');
+  const [city, setCity] = useState<string | null>(null);
 
   return (
       <View>
-        <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesData}></DropdownComponent>
-        {/* <DropdownComponent label='city'></DropdownComponent> */}
-        {/* aici pretty much trebuie sa fac un context / un provider ceva astfel incat cand se schimba tara selectata sa trimit in
-            al 2 lea dropdown orasele tarii respective */}
+        <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesNames} onChange={setCountry}></DropdownComponent>
+        <DropdownComponent label='city' labelField="name" valueField="name" dropdownData={countriesCities[country]} onChange={setCity}></DropdownComponent>
+
         <View>
             <Calendar></Calendar> 
             {/* e nevoie fix de acelasi lucru ca la dropdown si aici ca sa am acces la datele de inceput / final selectate de user */}

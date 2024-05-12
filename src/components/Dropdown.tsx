@@ -8,6 +8,7 @@ type DropdownProps = {
   dropdownData: [Object];
   labelField: string;
   valueField: string;
+  onChange: null | ((item: string) => void);
 }
 
 
@@ -18,6 +19,7 @@ const DropdownComponent = (props: DropdownProps) => {
   const data = props.dropdownData;
   const labelField = props.labelField;
   const valueField = props.valueField;
+  const propsOnChange = props.onChange;
 
   const renderLabel = () => {
     if (value || isFocus) {
@@ -52,6 +54,9 @@ const DropdownComponent = (props: DropdownProps) => {
         onChange={item => {
           setValue(item.name);
           setIsFocus(false);
+          if (propsOnChange) {
+            propsOnChange(item.name);
+          }
         }}
         renderLeftIcon={() => (
           <AntDesign
