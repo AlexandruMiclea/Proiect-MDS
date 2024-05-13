@@ -1,12 +1,9 @@
-import { FontAwesome } from "@expo/vector-icons";
-import { Link, Stack } from "expo-router";
-import { Pressable } from "react-native";
-import Colors from "@/constants/Colors";
-import NewItinerary from "./newItinerary";
+import { Stack } from "expo-router";
 
-export default function MenuStack() {
+export default function Layout() {
   return (
-    <Stack screenOptions={{headerShown: false}}>
+    <Stack>
+      <Stack.Screen name="newItinerary"  options={{ headerShown: true, headerTitle: "New Itinerary"}}/>
     </Stack>
   );
 }

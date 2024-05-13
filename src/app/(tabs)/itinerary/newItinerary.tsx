@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DropdownComponent from "@/components/Dropdown";
 import { View, StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
 import countriesNamesJson from '@assets/data/countriesNames.json';
@@ -10,6 +10,8 @@ import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import NumericInput from "@/components/NumericInput";
 import { en, registerTranslation } from 'react-native-paper-dates';
+import ItineraryPage from './itineraryPage'
+import { useNavigation, useRouter } from "expo-router"
 
 registerTranslation('en', en)
 
@@ -17,6 +19,8 @@ const countriesNames = JSON.parse(JSON.stringify(countriesNamesJson));
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
 const NewItinerary = () => {
+  const router = useRouter();
+
   type Errors = {
     validCountry: string,
     validCity: string,
@@ -37,9 +41,8 @@ const NewItinerary = () => {
 
   const colorScheme = useColorScheme();
   const mainColor = Colors[colorScheme ?? 'light'].tint;
-  const [isFormValid, setIsFormValid] = useState(false);
 
-  const validateForm = () => {
+  function validateForm() {
     if (!country){
       errors.validCountry = "No country selected.";
     }
@@ -55,9 +58,8 @@ const NewItinerary = () => {
     if (!budget){
       errors.validBudget = "No itinerary budget given.";
     }
-    
-    const formIsValid = errors.validCountry === "" && errors.validCity === "" && errors.validStartDate === "" && errors.validEndDate === "" && errors.validBudget === ""
-    setIsFormValid(formIsValid);
+
+    return errors.validCountry === "" && errors.validCity === "" && errors.validStartDate === "" && errors.validEndDate === "" && errors.validBudget === ""
   }
 
   const calendarOnDismiss = React.useCallback(() => {
@@ -82,11 +84,10 @@ const NewItinerary = () => {
   const handleSubmit = () => {
     logInfo();
     validateForm();
-    if (isFormValid){
+    if (validateForm()){
       console.log("success");
-      
+      router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
       // TODO the data is valid, redirect to next screen in stack
-      return 
     } else {
       // TODO log the errors in their respective zones
       console.log("error log:");
