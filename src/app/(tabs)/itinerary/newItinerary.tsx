@@ -87,9 +87,7 @@ const NewItinerary = () => {
     if (validateForm()){
       console.log("success");
       router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
-      // TODO the data is valid, redirect to next screen in stack
     } else {
-      // TODO log the errors in their respective zones
       console.log("error log:");
       console.log(errors.validCountry);
       console.log(errors.validCity);
