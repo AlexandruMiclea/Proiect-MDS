@@ -5,9 +5,7 @@ import { LocationQuery, LocationObj, PhotoQuery, sampleLocationData } from '@/ty
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState,  } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
-
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
-import { View, Text } from 'react-native'
 import Location from './location';
 
 const sampleLocationData = {
@@ -110,7 +108,7 @@ const ItineraryPage = () => {
 
         return (<View>
             <Text>here itinerary gets generated</Text>
-            <Text></Text>
+            <Location {...sampleLocationData}/>
         </View>)
     }
 }
