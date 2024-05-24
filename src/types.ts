@@ -20,7 +20,9 @@ export type LocationProps = {
     address: string;
     images: LocationImageItem[];
 }
-
+export type LocationListProps {
+    locations: LocationProps[];
+}
 type AddressObj = {
     street1: string,
     street2?: string,

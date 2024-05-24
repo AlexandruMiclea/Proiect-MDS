@@ -2,9 +2,8 @@ import React, {useState, useRef} from 'react';
 import { View, FlatList, StyleSheet, Animated, ViewToken  } from 'react-native';
 import LocationImg from './locationImg';
 import Paginator from './paginator';
-import { LocationImageItem } from '@/types';
 
-const LocationImgList:React.FC<{images : LocationImageItem[]}> = ({images}) => {
+const LocationImgList:React.FC<{images : [{imageUrl:string}?]}> = ({images}) => {
     const [currentIndex, setCurrentIndex] = useState(0); // keep track of the index of the currently visible slide
     const scrollX = useRef(new Animated.Value(0)).current; // keep track of the current scroll position of the FlatList
     const slidesRef = useRef(null);

@@ -6,34 +6,10 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState,  } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
-import Location from './location';
-
-const sampleLocationData = {
-    title: "Beautiful Location",
-    description: "A stunning location with breathtaking views.",
-    address: "123 Scenic Drive, Beauty Town, Country",
-    images: [
-      { imageUrl: "https://i.imgur.com/pwpWaWu.jpg" },
-      { imageUrl: "https://i.imgur.com/KIPtISY.jpg" },
-      { imageUrl: "https://i.imgur.com/2jMCqQ2.jpg" },
-      { imageUrl: "https://i.imgur.com/QFDRuAh.jpg" },
-      { imageUrl: "https://i.imgur.com/8yIIokW.jpg" }
-    ]
-  };
+import LocationList from './locationList';
 
 const ItineraryPage = () => {
     const params = useLocalSearchParams();
-    
-    // export type sampleLocationData = {
-    //     title: string,
-    //     description: string,
-    //     address: string,
-    //     images: [
-    //         {
-    //             imageUrl: string
-    //         },
-    //     ]
-    // };
 
     const [loaded, setLoaded] = useState(false);
     const [locationData, setLocationData] = useState<sampleLocationData[]>([]);
@@ -107,8 +83,7 @@ const ItineraryPage = () => {
         console.log(locationData);
 
         return (<View>
-            <Text>here itinerary gets generated</Text>
-            <Location {...sampleLocationData}/>
+            <LocationList locations={locationData}/>
         </View>)
     }
 }

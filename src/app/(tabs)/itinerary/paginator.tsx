@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, Animated, useWindowDimensions} from 'react-native';
 import { LocationImageItem } from '@/types';
 
-const Paginator: React.FC<{ data: LocationImageItem[], scrollX:Animated.Value }> = ({data, scrollX}) => {
+const Paginator: React.FC<{ data: [{imageUrl:string}?], scrollX:Animated.Value }> = ({data, scrollX}) => {
     const {width} = useWindowDimensions();
     return (
         <View style={styles.container}>

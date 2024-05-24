@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, StyleSheet, Text} from 'react-native';
 import LocationImgList from './locationImgList';
-import { LocationProps } from '@/types';
+import { sampleLocationData } from '@/types';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-const Location: React.FC<LocationProps> = ({ title, description, address, images}) => {
+const Location: React.FC<sampleLocationData> = ({ title, description, address, images}) => {
     console.log("desc" + description);
     console.log("title" + title);
     console.log("addr" + address);
