@@ -11,3 +11,12 @@ export type Place = {
     traditionsDescription: string;
     price: string;
 };
+export type LocationImageItem = {
+    imageUrl: string;
+}
+export type LocationProps = {
+    title: string;
+    description: string;
+    address: string;
+    images: LocationImageItem[];
+}

@@ -1,7 +1,19 @@
-import { count, range } from 'd3';
 import { useLocalSearchParams } from 'expo-router';
 import { View, Text } from 'react-native'
-import { CalendarDate } from 'react-native-paper-dates/lib/typescript/Date/Calendar';
+import Location from './location';
+
+const sampleLocationData = {
+    title: "Beautiful Location",
+    description: "A stunning location with breathtaking views.",
+    address: "123 Scenic Drive, Beauty Town, Country",
+    images: [
+      { imageUrl: "https://i.imgur.com/pwpWaWu.jpg" },
+      { imageUrl: "https://i.imgur.com/KIPtISY.jpg" },
+      { imageUrl: "https://i.imgur.com/2jMCqQ2.jpg" },
+      { imageUrl: "https://i.imgur.com/QFDRuAh.jpg" },
+      { imageUrl: "https://i.imgur.com/8yIIokW.jpg" }
+    ]
+  };
 
 const ItineraryPage = () => {
     const params = useLocalSearchParams();
@@ -11,9 +23,10 @@ const ItineraryPage = () => {
     console.log(params.city);
     console.log(params.budget);
     return (
-    <View>
+    <View style={{ flex: 1 }}>
         <Text>here itinerary gets generated</Text>
-        <Text></Text>
+        <Text>Hello</Text>
+        <Location {...sampleLocationData} />
     </View>)
 }
 
