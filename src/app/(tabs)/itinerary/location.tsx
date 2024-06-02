@@ -1,23 +1,21 @@
 import React from 'react';
 import { View, StyleSheet, Text} from 'react-native';
-import LocationImgList from './locationImgList';
+import LocationImgCarousel from './locationImgCarousel';
 import { sampleLocationData } from '@/types';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Entypo from '@expo/vector-icons/Entypo';
 
 const Location: React.FC<sampleLocationData> = ({ title, description, address, images}) => {
-    console.log("desc" + description);
-    console.log("title" + title);
-    console.log("addr" + address);
-    console.log("images" + images)
     return(
         <View style={styles.container}>
-            <LocationImgList images={images}/>
+            <LocationImgCarousel images={images}/>
              <View style={styles.textContainer}>
-                <Text style={styles.title}> 
-                {/* <FontAwesome name={"location-dot" as string} size={20} color={"#2f95dc"} /> */}
-
-                    {title}
-                </Text>
+                
+                {/* <FontAwesomeIcon name="location-pin" size={20} color="#2f95dc" /> */}
+                <View style={styles.titleContainer}>
+                <Entypo name='location-pin' size={28} color="#7975F8"/>
+                <Text style={styles.title}> {title} </Text>
+                </View>
+                
                 <Text style={styles.description}>{description}</Text>
                 <Text style={styles.address}>{address}</Text>
             </View>
@@ -29,13 +27,18 @@ export default Location;
 
 const styles = StyleSheet.create({
     container: {
-        height: 280,
+        height: 300,
         alignItems: 'center',
         justifyContent: 'center',
     },
     textContainer: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    titleContainer:{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems:'center',
     },
     title: {
         fontWeight:'700',

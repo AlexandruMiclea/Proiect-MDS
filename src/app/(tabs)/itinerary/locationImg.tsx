@@ -9,7 +9,7 @@ const LocationImg: React.FC<{ item: { imageUrl: string; } | undefined }> = ({ it
         return (
             <View style={[styles.container, { width}]}>
                 <Image source = {{uri: item.imageUrl}}
-                    style={[styles.image, {width: imgContainerWidth, resizeMode:'contain'}]}/>
+                    style={[styles.image, {width: imgContainerWidth, resizeMode:'cover'}]}/>
             </View>
         )
     }

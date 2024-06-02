@@ -14,6 +14,7 @@ const ItineraryPage = () => {
     const [loaded, setLoaded] = useState(false);
     const [locationData, setLocationData] = useState<sampleLocationData[]>([]);
     const searchValueList = ["art gallery", "museum", "monument"]; // TODO add more
+    const [currentTemperature, setCurrentTemperature] = useState(null);
 
     // useEffect is used for handling asynchronous operations. In our case, we want
     // to wait for the Tripadvisor API calls to be completed
@@ -69,6 +70,24 @@ const ItineraryPage = () => {
         itineraryDataCall();
     }, [setLoaded, setLocationData])
 
+    //i need lat and lng to work
+    // useEffect(()=>{
+    //     const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m`;
+    //     const fetchCurrentWeather = async () => {
+    //         try {
+    //             const response = await fetch(url);
+    //             if (!response.ok){
+    //                 return;
+    //             }
+    //             const data = await response.json();
+    //             setCurrentTemperature(data.current.temperature_2m);
+    //         } catch (error){
+    //             console.error("Error fetching current temperature: ", error);
+    //         }
+    //     }
+    //     fetchCurrentWeather();
+    // }, [])
+
     if (!loaded) {
         // TODO change loading screen circle color
         return (<View style={styles.loadingScreen}>
@@ -83,6 +102,10 @@ const ItineraryPage = () => {
         console.log(locationData);
 
         return (<View>
+            <Text>{params.city}, {params.country}</Text>
+            <Text>{params.startDate} - {params.endDate}</Text>
+            <Text>{params.budget} €</Text>
+            <Text>29°C</Text>
             <LocationList locations={locationData}/>
         </View>)
     }

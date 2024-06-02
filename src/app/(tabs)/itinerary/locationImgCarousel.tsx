@@ -3,7 +3,7 @@ import { View, FlatList, StyleSheet, Animated, ViewToken  } from 'react-native';
 import LocationImg from './locationImg';
 import Paginator from './paginator';
 
-const LocationImgList:React.FC<{images : [{imageUrl:string}?]}> = ({images}) => {
+const locationImgCarousel:React.FC<{images : [{imageUrl:string}?]}> = ({images}) => {
     const [currentIndex, setCurrentIndex] = useState(0); // keep track of the index of the currently visible slide
     const scrollX = useRef(new Animated.Value(0)).current; // keep track of the current scroll position of the FlatList
     const slidesRef = useRef(null);
@@ -38,7 +38,7 @@ const LocationImgList:React.FC<{images : [{imageUrl:string}?]}> = ({images}) => 
     );
 }
 
-export default LocationImgList;
+export default locationImgCarousel;
 
 const styles = StyleSheet.create({
     container: {
