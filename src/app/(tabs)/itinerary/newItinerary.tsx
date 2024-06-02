@@ -91,11 +91,9 @@ const validRange = {
 
   const handleSubmit = () => {
     if (validateInputs()) {
-    router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
-
+      router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
+      logInfo();
     }
-
-    logInfo();
 
   }
 
@@ -180,6 +178,8 @@ const styles = StyleSheet.create({
   },
   intervalText: {
     fontSize: 16,
+    top: '33%',
+    left: 14,
   },
   button: {
     backgroundColor: 'gray',
