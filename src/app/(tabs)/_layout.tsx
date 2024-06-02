@@ -40,7 +40,6 @@ export default function TabLayout() {
         name="itinerary"
         options={{
           title: 'New itinerary',
-          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="plane" size={size} color={color} />
           ),
