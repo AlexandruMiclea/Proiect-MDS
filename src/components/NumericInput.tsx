@@ -62,7 +62,7 @@ const NumericInput = (props: NumericInputParams) => {
                     placeholderTextColor="black"
                 />
                 <TouchableOpacity style={[styles.button, {backgroundColor: mainColor}]} onPress={handleSave}>
-                    <MaterialIcons size={20} color="white" name="save-alt"/>
+                    <MaterialIcons size={20} color="white" name="check"/>
                 </TouchableOpacity>
             </View>
             
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     },
     button: {
         marginLeft: 8,
-        padding: 10,
+        padding: 7,
         borderRadius: 8,
         marginRight: 6,
     },

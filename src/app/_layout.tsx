@@ -51,7 +51,9 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <Stack>
+        <Stack screenOptions={{
+          headerBackTitleVisible: false
+        }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           {/*TODO see if these need to be moved in a separate profile _layout file*/ }
           <Stack.Screen name="(profile)/Profile" options={{ headerShown: true, headerTitle: "Profile Page"}}/>

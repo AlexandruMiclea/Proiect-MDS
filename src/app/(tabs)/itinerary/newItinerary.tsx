@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import DropdownComponent from "@/components/Dropdown";
-import { View, StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import countriesNamesJson from '@assets/data/countriesNames.json';
 import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import { DatePickerModal } from "react-native-paper-dates";
@@ -10,8 +10,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import NumericInput from "@/components/NumericInput";
 import { en, registerTranslation } from 'react-native-paper-dates';
-import ItineraryPage from './itineraryPage'
-import { useNavigation, useRouter } from "expo-router"
+import { useRouter } from "expo-router"
 
 registerTranslation('en', en)
 
@@ -20,16 +19,6 @@ const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
 const NewItinerary = () => {
   const router = useRouter();
-
-  type Errors = {
-    validCountry: string,
-    validCity: string,
-    validStartDate: string,
-    validEndDate: string,
-    validBudget: string,
-  };
-
-  let errors: Errors = { validCountry: "", validCity: "", validStartDate: "", validEndDate: "", validBudget: "" }
 
   const [country, setCountry] = useState<string>('');
   const [city, setCity] = useState<string | null>(null);
@@ -42,104 +31,117 @@ const NewItinerary = () => {
   const colorScheme = useColorScheme();
   const mainColor = Colors[colorScheme ?? 'light'].tint;
 
-  function validateForm() {
-    if (!country){
-      errors.validCountry = "No country selected.";
-    }
-    if (!city){
-      errors.validCity = "No city selected.";
-    }
-    if (!range.startDate){
-      errors.validStartDate = "No start date selected.";
-    }
-    if (!range.endDate){
-      errors.validEndDate = "No end date selected.";
-    }
-    if (!budget){
-      errors.validBudget = "No itinerary budget given.";
-    }
+const calendarOnDismiss = React.useCallback(() => {
+  setOpen(false);
+}, [setOpen]);
 
-    return errors.validCountry === "" && errors.validCity === "" && errors.validStartDate === "" && errors.validEndDate === "" && errors.validBudget === ""
+const calendarOnConfirm = React.useCallback(
+  ({ startDate, endDate }: { startDate: CalendarDate, endDate: CalendarDate }) => {
+    setOpen(false);
+    setRange({ startDate: startDate, endDate: endDate });
+  },
+  [setOpen, setRange]
+);
+
+const handleCountryChange = (selectedCountry: string) => {
+  setCountry(selectedCountry);
+  setCity(null);
+};
+
+const validateInputs = () => {
+  if (!country) {
+    Alert.alert('Validation Error', 'Please select a country.');
+    return false;
   }
+  if (!city) {
+    Alert.alert('Validation Error', 'Please select a city.');
+    return false;
+  }
+  if (!range.startDate || !range.endDate) {
+    Alert.alert('Validation Error', 'Please select a date range.');
+    return false;
+  }
+  if (!budget) {
+    Alert.alert('Validation Error', 'Please enter a budget.');
+    return false;
+  }
+  if (parseInt(budget) < 100) {
+    Alert.alert('Validation Error', 'Please enter a budget bigger than 100.');
+    return false;
+  }
+  return true;
+};
 
-  const calendarOnDismiss = React.useCallback(() => {
-      setOpen(false);
-  }, [setOpen]);
-
-  const calendarOnConfirm = React.useCallback(
-      ({ startDate, endDate }: { startDate: CalendarDate, endDate: CalendarDate }) => {
-      setOpen(false);
-      setRange({ startDate: startDate, endDate: endDate });
-      },
-      [setOpen, setRange]
-  );
-
-  const logInfo = () => {
+const logInfo = () => {
+  if (validateInputs()) {
     console.log(
-      "Country: " + country + '\n' + "City: " + city + '\n' + 
-      "Start date & End date: " + range.startDate?.toLocaleDateString() + " " + range.endDate?.toLocaleDateString() + '\n' +
+      "Country: " + country + '\n' + 
+      "City: " + city + '\n' + 
+      "Start date & End date: " + range.startDate?.toLocaleDateString() + " - " + range.endDate?.toLocaleDateString() + '\n' +
       "Budget: " + budget + '\n'
-    )}
+    );
+  }
+};
+
+const validRange = {
+  startDate: new Date(),
+  endDate: undefined,
+  disabledDates: undefined
+};
 
   const handleSubmit = () => {
-    logInfo();
-    validateForm();
-    if (validateForm()){
-      console.log("success");
-      router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
-    } else {
-      console.log("error log:");
-      console.log(errors.validCountry);
-      console.log(errors.validCity);
-      console.log(errors.validStartDate);
-      console.log(errors.validEndDate);
-      console.log(errors.validBudget);
+    if (validateInputs()) {
+    router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
+
     }
+
+    logInfo();
+
   }
 
   return (
-      <View style={styles.mainContainer}>
-        <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesNames} onChange={setCountry} iconName="earth"></DropdownComponent>
-        <DropdownComponent label='city' labelField="name" valueField="name" dropdownData={countriesCities[country]} onChange={setCity} iconName="city"></DropdownComponent>
+    <View style={styles.mainContainer}>
+      <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesNames} onChange={handleCountryChange} iconName="earth"></DropdownComponent>
+      <DropdownComponent label='city' labelField="name" valueField="name" dropdownData={countriesCities[country]} onChange={setCity} iconName="city"></DropdownComponent>
 
-        <View style={styles.calendarContainer}>
-            <Text style={styles.intervalText}>Trip interval: {range.startDate?.toLocaleDateString()} - {range.endDate?.toLocaleDateString()}</Text>
-            <TouchableOpacity onPress={() => setOpen(true)} style={[styles.button, {backgroundColor: mainColor}]}>
-              <FontAwesome size={18} color="white" name="calendar-o"/>
-                <DatePickerModal
-                locale="en"
-                mode="range"
-                visible={open}
-                onDismiss={calendarOnDismiss}
-                startDate={range.startDate}
-                inputEnabled={false}
-                endDate={range.endDate}
-                onConfirm={calendarOnConfirm}
-                startYear={2023}
-                endYear={2025}
-                // TODO: adauga validRange!
-                saveLabel="Save"
-                label='Choose your vacation interval'
-                presentationStyle='pageSheet'
-                />
-            </TouchableOpacity>
-        </View>
-        <NumericInput label='budget' onChange={setBudget}></NumericInput>
-
-        <View style={styles.createButtonContainer}>
-          {/* aici trebuie sa adaugati voi onPress la touchableopacity sa faca ce vreti voi
-              datele de care aveti nevoie sunt country, city, range.startDate, range.endDate si budget
-              in functia de la onpress sa faceti un for care trece prin countriescities[country] si salveaza info despre orasu respectiv*/}
-          <TouchableOpacity 
-            onPress ={handleSubmit}
-            style={[styles.createButton, {backgroundColor: mainColor}]
-          }>
-            <Text style={styles.createButtonText}>Create</Text>
+      <View style={styles.calendarContainer}>
+        <View style={styles.calendarBorder}>
+          <Text style={styles.intervalText}>Trip interval: {range.startDate?.toLocaleDateString()} - {range.endDate?.toLocaleDateString()}</Text>
+          <TouchableOpacity onPress={() => setOpen(true)} style={[styles.button, { backgroundColor: mainColor }]}>
+            <FontAwesome size={18} color="white" name="calendar-o" />
+            <DatePickerModal
+              locale="en"
+              mode="range"
+              visible={open}
+              onDismiss={calendarOnDismiss}
+              startDate={range.startDate}
+              inputEnabled={false}
+              endDate={range.endDate}
+              onConfirm={calendarOnConfirm}
+              startYear={2023}
+              endYear={2025}
+              validRange={validRange}
+              saveLabel="Save"
+              label='Choose your vacation interval'
+              presentationStyle='pageSheet'
+            />
           </TouchableOpacity>
         </View>
       </View>
+      <NumericInput label='budget' onChange={setBudget}></NumericInput>
+
+      <View style={styles.createButtonContainer}>
+        <TouchableOpacity
+          onPress={handleSubmit}
+          style={[styles.createButton, { backgroundColor: mainColor }]}
+        >
+          <Text style={styles.createButtonText}>Create</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
       
-)}
+}
 
 export default NewItinerary;
 
@@ -182,21 +184,29 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: 'gray',
     padding: 1,
-    justifyContent: 'center', 
+    justifyContent: 'center',
     height: '72%',
     aspectRatio: 1,
     alignItems: 'center',
-    margin: 4,
     borderRadius: 7,
     position: 'absolute',
-    right: 14,
+    right: 6,
+    top: 7,
   },
   calendarContainer: {
     padding: 16,
-    height: 92,
     backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
+    height: 82,
+  },
+  calendarBorder: {
+    width: '100%',
+    borderWidth: 1,
+    height: '100%',
+    borderRadius: 8,
+    borderColor: 'gray',
   },
   dropdown: {
     height: 50,
