@@ -11,7 +11,7 @@ const AuthContext = createContext<AuthData>({
 });
 
 export default function AuthProvider({ children }: PropsWithChildren) {
-const [session, setSession] = useState<Session | null>(null);
+    const [session, setSession] = useState<Session | null>(null);
 
     useEffect(() => {
         const fetchSession = async () => { 
