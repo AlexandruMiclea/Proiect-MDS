@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, View, Image, TouchableOpacity} from 'react-native';
 import { Text } from '@/components/Themed';
 import PackingListItem from '@/components/PackingListItem';
-
+import { countries } from 'countries-list';
+const cities = require('assets/countries/countries.json');
+ 
 
 interface Item {
   id: string;
@@ -58,7 +60,8 @@ const PackingListLayout = () => {
     <View style={styles.container}>
       <Image source={require("../../../../assets/images/stockholm.png")} style={styles.image}/>
       <View style={styles.listContainer}>
-      <Text style={styles.title}>Stockholm, Sweeden</Text>
+      <Text style={styles.title}>{cities["Romania"][0].name}</Text>
+  
       <View style={styles.detailsContainer}>
         <View>
           <Text style={styles.dates}>Jul 20 - Jul 24</Text>
