@@ -83,11 +83,12 @@ const PlaceDetailsScreen = () => {
           )}
         </View>
 
+        {/* todo sytling la astea si sa apara info care trebuie*/}
 
-        <View style={{ marginTop: 20, width: '100%', marginHorizontal: 10 }}>
-          {selectedButton === "General" && <PlaceGeneral info={[place.name ,place.primaryLanguage, place.secondaryLanguage, place.climate, place.price]}/>}
-          {selectedButton === "Attractions" && <PlaceAttractions info={[place.attractions ,place.attractionDescription]}/>}
-          {selectedButton === "Traditions" && <PlaceTraditions info={[place.traditions ,place.traditionsDescription]}/>}
+        <View style={{ marginTop: 20 }}>
+          {selectedButton === "General" && <PlaceGeneral />}
+          {selectedButton === "Attractions" && <PlaceAttractions />}
+          {selectedButton === "Traditions" && <PlaceTraditions />}
         </View>
 
       </View>
@@ -99,8 +100,8 @@ export default PlaceDetailsScreen;
 const styles = StyleSheet.create({
 
   container: {
+    backgroundColor: 'gainsboro',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5'
   },
 
   image: {

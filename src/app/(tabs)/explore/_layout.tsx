@@ -21,7 +21,6 @@ export default function MenuStack() {
                   </Pressable>
                 </Link>
               ),
-              headerBackTitleVisible: false
         }}>
             <Stack.Screen name="index" options={{title: 'Explore'}}/>
         </Stack>
