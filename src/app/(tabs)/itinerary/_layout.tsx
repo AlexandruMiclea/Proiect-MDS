@@ -55,6 +55,10 @@ const NewItinerary = () => {
       Alert.alert('Validation Error', 'Please enter a budget.');
       return false;
     }
+    if (parseInt(budget) < 100) {
+      Alert.alert('Validation Error', 'Please enter a budget bigger than 100.');
+      return false;
+    }
     return true;
   };
 
