@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import DropdownComponent from "@/components/Dropdown";
 import { View, StyleSheet, TouchableOpacity, Text, TextInput } from "react-native";
 import countriesNamesJson from '@assets/data/countriesNames.json';
@@ -10,8 +10,6 @@ import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import NumericInput from "@/components/NumericInput";
 import { en, registerTranslation } from 'react-native-paper-dates';
-import ItineraryPage from './itineraryPage'
-import { useNavigation, useRouter } from "expo-router"
 
 registerTranslation('en', en)
 
@@ -19,17 +17,6 @@ const countriesNames = JSON.parse(JSON.stringify(countriesNamesJson));
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
 const NewItinerary = () => {
-  const router = useRouter();
-
-  type Errors = {
-    validCountry: string,
-    validCity: string,
-    validStartDate: string,
-    validEndDate: string,
-    validBudget: string,
-  };
-
-  let errors: Errors = { validCountry: "", validCity: "", validStartDate: "", validEndDate: "", validBudget: "" }
 
   const [country, setCountry] = useState<string>('');
   const [city, setCity] = useState<string | null>(null);
@@ -41,26 +28,6 @@ const NewItinerary = () => {
 
   const colorScheme = useColorScheme();
   const mainColor = Colors[colorScheme ?? 'light'].tint;
-
-  function validateForm() {
-    if (!country){
-      errors.validCountry = "No country selected.";
-    }
-    if (!city){
-      errors.validCity = "No city selected.";
-    }
-    if (!range.startDate){
-      errors.validStartDate = "No start date selected.";
-    }
-    if (!range.endDate){
-      errors.validEndDate = "No end date selected.";
-    }
-    if (!budget){
-      errors.validBudget = "No itinerary budget given.";
-    }
-
-    return errors.validCountry === "" && errors.validCity === "" && errors.validStartDate === "" && errors.validEndDate === "" && errors.validBudget === ""
-  }
 
   const calendarOnDismiss = React.useCallback(() => {
       setOpen(false);
@@ -80,22 +47,6 @@ const NewItinerary = () => {
       "Start date & End date: " + range.startDate?.toLocaleDateString() + " " + range.endDate?.toLocaleDateString() + '\n' +
       "Budget: " + budget + '\n'
     )}
-
-  const handleSubmit = () => {
-    logInfo();
-    validateForm();
-    if (validateForm()){
-      console.log("success");
-      router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
-    } else {
-      console.log("error log:");
-      console.log(errors.validCountry);
-      console.log(errors.validCity);
-      console.log(errors.validStartDate);
-      console.log(errors.validEndDate);
-      console.log(errors.validBudget);
-    }
-  }
 
   return (
       <View style={styles.mainContainer}>
@@ -131,12 +82,15 @@ const NewItinerary = () => {
               datele de care aveti nevoie sunt country, city, range.startDate, range.endDate si budget
               in functia de la onpress sa faceti un for care trece prin countriescities[country] si salveaza info despre orasu respectiv*/}
           <TouchableOpacity 
-            onPress ={handleSubmit}
+            onPress ={logInfo}
             style={[styles.createButton, {backgroundColor: mainColor}]
           }>
             <Text style={styles.createButtonText}>Create</Text>
           </TouchableOpacity>
         </View>
+        
+        
+            
       </View>
       
 )}
