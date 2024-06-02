@@ -83,9 +83,8 @@ const PlaceDetailsScreen = () => {
           )}
         </View>
 
-        {/* todo sytling la astea si sa apara info care trebuie*/}
 
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: 20, width: '100%', marginHorizontal: 10 }}>
           {selectedButton === "General" && <PlaceGeneral info={[place.name ,place.primaryLanguage, place.secondaryLanguage, place.climate, place.price]}/>}
           {selectedButton === "Attractions" && <PlaceAttractions info={[place.attractions ,place.attractionDescription]}/>}
           {selectedButton === "Traditions" && <PlaceTraditions info={[place.traditions ,place.traditionsDescription]}/>}

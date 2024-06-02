@@ -38,6 +38,11 @@ const NewItinerary = () => {
     [setOpen, setRange]
   );
 
+  const handleCountryChange = (selectedCountry: string) => {
+    setCountry(selectedCountry);
+    setCity(null);
+  };
+
   const validateInputs = () => {
     if (!country) {
       Alert.alert('Validation Error', 'Please select a country.');
@@ -81,7 +86,7 @@ const NewItinerary = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesNames} onChange={setCountry} iconName="earth"></DropdownComponent>
+      <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesNames} onChange={handleCountryChange} iconName="earth"></DropdownComponent>
       <DropdownComponent label='city' labelField="name" valueField="name" dropdownData={countriesCities[country]} onChange={setCity} iconName="city"></DropdownComponent>
 
       <View style={styles.calendarContainer}>
