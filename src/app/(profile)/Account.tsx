@@ -5,7 +5,6 @@ import { Button, Input } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
 import { useNavigation, router} from "expo-router";
-import useAuth from "../providers/AuthProvider";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
