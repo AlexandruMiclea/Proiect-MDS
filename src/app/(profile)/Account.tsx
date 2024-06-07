@@ -2,18 +2,23 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Text, Pressable, StyleSheet, View, Alert, ScrollView } from "react-native";
 import { Button, Input } from "react-native-elements";
+import { Image } from "react-native"
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
-import { useNavigation, router} from "expo-router";
+import { useNavigation, router, Redirect} from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import React from "react";
 
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
 
-  useEffect(() => {
-    if (session) getProfile();
-  }, [session]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (session) getProfile();
+    }, [session])
+  )
 
   async function getProfile() {
     try {
@@ -45,19 +50,12 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
-  const navigation = useNavigation();
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.avatarContainer}>
-    <Avatar
-      size={200}
-      url={avatarUrl}
-      onUpload={(url: string) => {
-        setAvatarUrl(url);
-      }}
-    />
-  </View>
+        <Image style={styles.accountImage} source={require('@assets/images/icon.png')}></Image>
+      </View>
+
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input label="Email" value={session?.user?.email} disabled />
       </View>
@@ -70,45 +68,49 @@ export default function Account({ session }: { session: Session }) {
       </View>
 
 
-{/* Add by andrei*/}
-<View style={styles.buttonContainer}>
-  <Pressable
-    onPress={() => {router.navigate({pathname: "ProfileSettings", params: session})}}
-    style={({ pressed }) => [
-      styles.pressable
-    ]}>
-    <Text style={[styles.text]}> Profile Settings </Text>
-  </Pressable>
-</View>
+    {/* Add by andrei*/}
+    <View style={styles.buttonContainer}>
+      <Pressable
+        onPress={() => {
+          router.navigate({pathname: "ProfileSettings"});
+        }}
+        style={({ pressed }) => [
+          styles.pressable
+        ]}>
+        <Text style={[styles.text]}> Profile Settings </Text>
+      </Pressable>
+    </View>
 
 
-{/* Add by andrei*/}
-<View style={styles.buttonContainer}>
-  <Pressable
-    onPress={() => {router.navigate({pathname: "PreferenceSettings", params: session})}}
-    style={({ pressed }) => [
-      styles.pressable
-    ]}
-  >
-    <Text style={[styles.text]}>
-      Preference Settings
-    </Text>
-  </Pressable>
-</View>
+    {/* Add by andrei*/}
+    <View style={styles.buttonContainer}>
+      <Pressable
+        onPress={() => {router.navigate({pathname: "PreferenceSettings"})}}
+        style={({ pressed }) => [
+          styles.pressable
+        ]}
+      >
+        <Text style={[styles.text]}>
+          Preference Settings
+        </Text>
+      </Pressable>
+    </View>
 
-{/* Add by andrei*/}
-<View style={styles.signOut}>
-  <Pressable
-      onPress={() => supabase.auth.signOut()}
-    style={({ pressed }) => [
-      styles.pressable
-    ]}
-  >
-    <Text style={[styles.text]}>
-      Sign Out
-    </Text>
-  </Pressable>
-</View>
+    {/* Add by andrei*/}
+    <View style={styles.signOut}>
+      <Pressable
+          onPress={() => {
+            supabase.auth.signOut()
+          }}
+        style={({ pressed }) => [
+          styles.pressable
+        ]}
+      >
+        <Text style={[styles.text]}>
+          Sign Out
+        </Text>
+      </Pressable>
+    </View>
     </ScrollView>
   );
 }
@@ -117,6 +119,13 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 40,
     padding: 12,
+  },
+  accountImage: {
+    width:200,
+    height: 200,
+    justifyContent: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto'
   },
   verticallySpaced: {
     paddingTop: 4,

@@ -5,6 +5,8 @@ import SessionError from '../SessionError'
 import Account from '@/app/(profile)/Account'
 import { View } from 'react-native'
 import { Session } from '@supabase/supabase-js'
+import { Redirect } from 'expo-router'
+import AuthPage from '../(auth)/AuthPage'
 
 export default function Profile() {
   const [session, setSession] = useState<Session | null>(null)
@@ -19,12 +21,10 @@ export default function Profile() {
     })
   }, [])
 
-  
 
-  return (
-    <View>
-      {/*if i am logged in, show my account, otherwise show the auth form*/
-        session && session.user ? <Account key={session.user.id} session={session} /> : <SessionError />}
-    </View>
-  )
+  if (!session || !session.user){
+    return <AuthPage></AuthPage>
+  } else {
+    return (<Account session={session}></Account>)
+  }
 }

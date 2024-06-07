@@ -150,27 +150,27 @@ export default function PreferenceSettings() {
         />
       </View>
   
-{/* Add by andrei*/}
-<View style={styles.buttonContainer}>
-  <Pressable
-    onPress={() =>
-      updateProfile({
-        preference_arts: PreferenceArts,
-        preference_food: PreferenceFood,
-        preference_sports: PreferenceSport,
-        preference_itinerary_complexity: ItineraryComplexity,
-      })}
-    style={({ pressed }) => [
-      styles.pressable,
-      { backgroundColor: pressed ? 'green' : 'transparent' }
-    ]}
-    disabled={loading}
-  >
-    <Text style={[styles.text]}>
-      {loading ? "Loading ..." : "Update"}
-    </Text>
-  </Pressable>
-</View>
+      {/* Add by andrei*/}
+      <View style={styles.buttonContainer}>
+        <Pressable
+          onPress={() =>
+            updateProfile({
+              preference_arts: PreferenceArts,
+              preference_food: PreferenceFood,
+              preference_sports: PreferenceSport,
+              preference_itinerary_complexity: ItineraryComplexity,
+            })}
+          style={({ pressed }) => [
+            styles.pressable,
+            { backgroundColor: pressed ? 'green' : 'transparent' }
+          ]}
+          disabled={loading}
+          >
+          <Text style={[styles.text]}>
+            {loading ? "Loading ..." : "Update"}
+          </Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
