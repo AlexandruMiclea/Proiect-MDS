@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Pressable, Text, StyleSheet, View, Alert, ScrollView} from "react-native";
-import { Button, Input, Slider } from "react-native-elements";
+import { Pressable, Text, StyleSheet, View, Alert, ScrollView, ActivityIndicator} from "react-native";
+import Slider from "@react-native-community/slider";
 import { Session } from "@supabase/supabase-js";
 import Avatar from "@/components/Avatar";
 import { useAuth } from "../providers/AuthProvider";
@@ -87,95 +87,108 @@ export default function PreferenceSettings() {
     }
   }
 
-  return (
-    <ScrollView style={styles.container}>
-      {/* Sliders for Arts */}
+  if (loading) {
+    // TODO change loading screen circle color
+    return (<View style={styles.loadingScreen}>
+        <ActivityIndicator size="large" color="#7975F8"></ActivityIndicator>
+    </View>)
+  } else {
+    return (
+      <ScrollView style={styles.container}>
+        {/* Sliders for Arts */}
 
-      <View style={styles.sliderContiner}>
-        <Text style={styles.sliderTitle}>Preferences in Art</Text>
-        <Slider
-          value={PreferenceArts}
-          minimumValue={0}
-          maximumValue={4}
-          minimumTrackTintColor="#7975F8"
-          step={1}
-          thumbStyle={styles.sliderThumb}
-          trackStyle={styles.sliderTrack}
-          onValueChange={(value) => setPreferenceArts(value)}
-        />
-      </View>
-  
-      {/* Sliders for Food */}
-      <View style={styles.sliderContiner}>
-        <Text style={styles.sliderTitle}>Preferences in Food</Text>
-        <Slider 
-          value={PreferenceFood}
-          minimumValue={0}
-          maximumValue={4}
-          minimumTrackTintColor="#7975F8"
-          step={1}
-          thumbStyle={styles.sliderThumb}
-          trackStyle={styles.sliderTrack}
-          onValueChange={(value) => setPreferenceFood(value)}
-        />
-      </View>
-  
-      {/* Sliders for Sports */}
-      <View style={styles.sliderContiner}>
-        <Text style={styles.sliderTitle}>Preferences in Sports</Text>
-        <Slider 
-          value={PreferenceSport}
-          minimumValue={0}
-          maximumValue={4}
-          minimumTrackTintColor="#7975F8"
-          step={1}
-          thumbStyle={styles.sliderThumb}
-          trackStyle={styles.sliderTrack}
-          onValueChange={(value) => setPreferenceSport(value)}
-        />
-      </View>
-  
-      {/* Sliders for Itinerary Complexity */}
-      <View style={styles.sliderContiner}>
-        <Text style={styles.sliderTitle}>Itinerary Complexity</Text>
-        <Slider 
-          value={ItineraryComplexity}
-          minimumValue={0}
-          maximumValue={4}
-          minimumTrackTintColor="#7975F8"
-          step={1}
-          thumbStyle={styles.sliderThumb}
-          trackStyle={styles.sliderTrack}
-          onValueChange={(value) => setItineraryComplexity(value)}
-        />
-      </View>
-  
-      {/* Add by andrei*/}
-      <View style={styles.buttonContainer}>
-        <Pressable
-          onPress={() =>
-            updateProfile({
-              preference_arts: PreferenceArts,
-              preference_food: PreferenceFood,
-              preference_sports: PreferenceSport,
-              preference_itinerary_complexity: ItineraryComplexity,
-            })}
-          style={({ pressed }) => [
-            styles.pressable,
-            { backgroundColor: pressed ? '#6762F5' : 'transparent' }
-          ]}
-          disabled={loading}
-          >
-          <Text style={[styles.text]}>
-            {loading ? "Loading ..." : "Update"}
-          </Text>
-        </Pressable>
-      </View>
-    </ScrollView>
-  );
+        <View style={styles.sliderContiner}>
+          <Text style={styles.sliderTitle}>Preferences in Art</Text>
+          <Slider
+            value={PreferenceArts}
+            minimumValue={0}
+            maximumValue={4}
+            minimumTrackTintColor="#7975F8"
+            step={1}
+            tapToSeek = {true}
+            thumbTintColor = '#6762F5'
+            onValueChange={(value) => setPreferenceArts(value)}
+          />
+        </View>
+    
+        {/* Sliders for Food */}
+        <View style={styles.sliderContiner}>
+          <Text style={styles.sliderTitle}>Preferences in Food</Text>
+          <Slider 
+            value={PreferenceFood}
+            minimumValue={0}
+            maximumValue={4}
+            minimumTrackTintColor="#7975F8"
+            step={1}
+            tapToSeek = {true}
+            thumbTintColor = '#6762F5'
+            onValueChange={(value) => setPreferenceFood(value)}
+          />
+        </View>
+    
+        {/* Sliders for Sports */}
+        <View style={styles.sliderContiner}>
+          <Text style={styles.sliderTitle}>Preferences in Sports</Text>
+          <Slider 
+            value={PreferenceSport}
+            minimumValue={0}
+            maximumValue={4}
+            minimumTrackTintColor="#7975F8"
+            step={1}
+            tapToSeek = {true}
+            thumbTintColor = '#6762F5'
+            onValueChange={(value) => setPreferenceSport(value)}
+          />
+        </View>
+    
+        {/* Sliders for Itinerary Complexity */}
+        <View style={styles.sliderContiner}>
+          <Text style={styles.sliderTitle}>Itinerary Complexity</Text>
+          <Slider 
+            value={ItineraryComplexity}
+            minimumValue={0}
+            maximumValue={4}
+            minimumTrackTintColor="#7975F8"
+            step={1}
+            tapToSeek = {true}
+            thumbTintColor = '#6762F5'
+            onValueChange={(value) => setItineraryComplexity(value)}
+          />
+        </View>
+    
+        {/* Add by andrei*/}
+        <View style={styles.buttonContainer}>
+          <Pressable
+            onPress={() =>
+              updateProfile({
+                preference_arts: PreferenceArts,
+                preference_food: PreferenceFood,
+                preference_sports: PreferenceSport,
+                preference_itinerary_complexity: ItineraryComplexity,
+              })}
+            style={({ pressed }) => [
+              styles.pressable,
+              { backgroundColor: pressed ? '#6762F5' : 'transparent' }
+            ]}
+            disabled={loading}
+            >
+            <Text style={[styles.text]}>
+              {loading ? "Loading ..." : "Update"}
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
+  loadingScreen: {
+    flex: 1,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    padding: 10
+  },
   container: {
     marginTop: 40,
     padding: 12,
