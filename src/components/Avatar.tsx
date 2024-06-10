@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { StyleSheet, View, Alert, Image, Button } from 'react-native'
+import { StyleSheet, View, Alert, Image, Button, Pressable, Text } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 
 interface Props {
@@ -94,23 +94,50 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
         <Image
           source={{ uri: avatarUrl }}
           accessibilityLabel="Avatar"
-          style={[avatarSize, styles.avatar, styles.image]}
+          style={[styles.accountImage]}
         />
       ) : (
-        <View style={[avatarSize, styles.avatar, styles.noImage]} />
+        <View/>
       )}
-      <View>
-        <Button
-          title={uploading ? 'Uploading ...' : 'Upload'}
+      <View style={styles.buttonContainer}>
+        <Pressable
           onPress={uploadAvatar}
           disabled={uploading}
-        />
+          style={({ pressed }) => [
+            styles.pressable,
+            { backgroundColor: pressed ? '#6762F5' : 'transparent' }
+          ]}
+        >
+          <Text style={styles.text}>
+          {uploading ? 'Uploading ...' : 'Upload'}
+          </Text>
+        </Pressable>
       </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    marginTop: 20,
+    alignSelf: "stretch",
+    borderRadius: 8,
+    backgroundColor: '#7975F8',
+  },
+  pressable: {
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accountImage: {
+    width:200,
+    height: 200,
+    justifyContent: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    borderRadius: 100
+  },
   avatar: {
     borderRadius: 5,
     overflow: 'hidden',
@@ -122,11 +149,9 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     borderRadius: 5,
   },
-  noImage: {
-    backgroundColor: '#333',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'rgb(200, 200, 200)',
-    borderRadius: 5,
+  text: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 })

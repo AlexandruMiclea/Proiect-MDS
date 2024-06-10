@@ -19,10 +19,10 @@ export default function TabIndex() {
         })
     }, [])
 
-    return (
-    <View>
-        {/*if i am logged in, show my account, otherwise show the auth form*/
-        session && session.user ? <Redirect href={'/explore/'}/> : <AuthPage />}
-    </View>
-    )
+    if (session && session.user) {
+        return <Redirect href = {'/explore'}/>
+    } else {
+        return <AuthPage/>
+    }
+
 }

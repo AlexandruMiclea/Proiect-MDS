@@ -162,7 +162,7 @@ export default function PreferenceSettings() {
             })}
           style={({ pressed }) => [
             styles.pressable,
-            { backgroundColor: pressed ? 'green' : 'transparent' }
+            { backgroundColor: pressed ? '#6762F5' : 'transparent' }
           ]}
           disabled={loading}
           >

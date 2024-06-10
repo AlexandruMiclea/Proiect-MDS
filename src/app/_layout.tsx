@@ -10,6 +10,7 @@ import AuthPage from './(auth)/AuthPage';
 import 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
 import { Session } from '@supabase/supabase-js';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -30,6 +31,7 @@ export default function RootLayout() {
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
+  const [loading, setLoading] = useState(true);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function RootLayout() {
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
     })
+    setLoading(false);
   }, [])
 
   useEffect(() => {
@@ -56,12 +59,23 @@ export default function RootLayout() {
     return null;
   }
 
-  if (session && session.user) {
-    return <RootLayoutNav />;
+  console.log('aci sunt Blaga');
+
+  if (loading) {
+    console.log('ma incarc');
+    return (<View style={styles.loadingScreen}>
+      <ActivityIndicator size="large" color="#7975F8"></ActivityIndicator>
+    </View>)
   } else {
-    return <AuthPage></AuthPage>
+    console.log('unde oi mere');
+    if (session && session.user) {
+      console.log('rootlay');
+      return <RootLayoutNav />;
+    } else {
+      console.log('authpa');
+      return <AuthPage></AuthPage>
+    }
   }
-  
 }
 
 function RootLayoutNav() {
@@ -83,3 +97,12 @@ function RootLayoutNav() {
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingScreen: {
+    flex: 1,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    padding: 10
+  }
+});
