@@ -11,6 +11,7 @@ import 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
 import { Session } from '@supabase/supabase-js';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import Colors from '@/constants/Colors';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -89,9 +90,9 @@ function RootLayoutNav() {
         }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           {/*TODO see if these need to be moved in a separate profile _layout file*/ }
-          <Stack.Screen name="(profile)/Profile" options={{ headerShown: true, headerTitle: "Profile Page"}}/>
-          <Stack.Screen name="(profile)/ProfileSettings" options={{ headerShown: true, headerTitle: "Account Settings"}}/>
-          <Stack.Screen name="(profile)/PreferenceSettings" options={{ headerShown: true, headerTitle: "Trip Preferences"}}/>
+          <Stack.Screen name="(profile)/Profile" options={{ headerShown: true, headerTitle: "Profile Page", headerTintColor: Colors.light.tint}}/>
+          <Stack.Screen name="(profile)/ProfileSettings" options={{ headerShown: true, headerTitle: "Account Settings", headerTintColor: Colors.light.tint}}/>
+          <Stack.Screen name="(profile)/PreferenceSettings" options={{ headerShown: true, headerTitle: "Trip Preferences", headerTintColor: Colors.light.tint}}/>
         </Stack>
       </AuthProvider>
     </ThemeProvider>

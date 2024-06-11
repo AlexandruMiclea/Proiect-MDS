@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { Alert, StyleSheet, View, AppState } from 'react-native'
+import { Alert, StyleSheet, View, AppState, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native'
 import { supabase } from '../../lib/supabase'
-import { Button, Image } from 'react-native'
-import { Input } from 'react-native-elements'
+import { Button, Image, Text } from 'react-native'
+import PrettyTextInput from '@/components/PrettyTextInput'
+import { useColorScheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
 
 // Tells Supabase Auth to continuously refresh the session automatically if
 // the app is in the foreground. When this is added, you will continue to receive
@@ -20,6 +22,9 @@ export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const colorScheme = useColorScheme();
+  const mainColor = Colors[colorScheme ?? 'light'].tint;
 
   async function signInWithEmail() {
     setLoading(true)
@@ -48,58 +53,73 @@ export default function AuthPage() {
   }
 
   return (
-    <View style={styles.container}>
-      {/*TODO add app logo here*/}
-      <Image style={styles.logoImage} source={require('@assets/images/icon.png')}></Image>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input
-          label="Email"
-          leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-          placeholder="email@address.com"
-          autoCapitalize={'none'}
-        />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Image style={styles.logoImage} source={require('@assets/images/icon.png')}></Image>
+        <PrettyTextInput label='email' onChange={setEmail} icon="envelope" secure={false}/>
+        <PrettyTextInput  label='password' onChange={setPassword} icon="lock" secure={true}></PrettyTextInput>
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity 
+            disabled={loading} 
+            onPress={signInWithEmail} 
+            style={[styles.button, { backgroundColor: mainColor, flex: 1 }]}
+          >
+            <Text style={styles.createButtonText}>Sign in</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            disabled={loading} 
+            onPress={signUpWithEmail} 
+            style={[styles.button, { backgroundColor: mainColor, flex: 1 }]}
+          >
+            <Text style={styles.createButtonText}>Sign up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.verticallySpaced}>
-        <Input
-          label="Password"
-          leftIcon={{ type: 'font-awesome', name: 'lock' }}
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          secureTextEntry={true}
-          placeholder="Password"
-          autoCapitalize={'none'}
-        />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" color="#7975F8" disabled={loading} onPress={() => signInWithEmail()} />
-      </View>
-      <View style={styles.verticallySpaced}>
-        <Button title="Sign up" color="#7975F8" disabled={loading} onPress={() => signUpWithEmail()} />
-      </View>
-    </View>
+        
+    </TouchableWithoutFeedback>
   )
 }
 
 const styles = StyleSheet.create({
   logoImage: {
-    width:200,
-    height: 200,
+    width: 140,
+    height: 140,
     justifyContent: 'center',
     marginLeft: 'auto',
-    marginRight: 'auto'
+    marginRight: 'auto',
+    marginTop: 40,
+    marginBottom: 40,
   },
   container: {
     marginTop: 40,
-    padding: 12,
+    height: '100%',
+    alignItems: 'center',
+    padding: 10, 
   },
   verticallySpaced: {
     paddingTop: 4,
     paddingBottom: 4,
     alignSelf: 'stretch',
   },
-  mt20: {
-    marginTop: 20,
+  buttonsContainer: {
+    position: 'absolute',
+    bottom: 80,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
+  button: {
+    alignItems: 'center',
+    borderRadius: 14,
+    marginTop: 10,
+    height: 50,
+    width: 10,
+    margin: 6,
+  },
+  createButtonText: {
+    color: 'white',
+    paddingVertical: 14,
+    fontWeight: 'bold',
+  }
 })

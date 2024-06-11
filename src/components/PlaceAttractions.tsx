@@ -1,7 +1,9 @@
 import { Text, StyleSheet, View, FlatList } from 'react-native';
 
+// Define the PlaceAttractions component
 const PlaceAttractions = ({ info }: { info: any[] }) => {
     
+    // Destructure the attractions and attractionDescription from the info prop
     const [attractions, attractionDescription] = info;
 
     return (
@@ -27,6 +29,7 @@ const PlaceAttractions = ({ info }: { info: any[] }) => {
     );
 }
 
+// Styles
 const styles = StyleSheet.create({
     text: {
         fontSize: 16,
