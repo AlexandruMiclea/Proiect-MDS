@@ -1,18 +1,19 @@
-// custom component for a numeric input because react native does not have one sadly
 import React, { useState } from 'react';
 import { TextInput, StyleSheet, View, TouchableOpacity, Text, Keyboard } from 'react-native';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import { Fontisto, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 
 type NumericInputParams = {
     label: string;
     onChange: (value: string) => void;
+    icon: string;
+    secure: boolean;
 }
 
-const NumericInput = (props: NumericInputParams) => {
+const PrettyTextInput = (props: NumericInputParams) => {
 
-    // State variable
+    // State variables
     const [value, setValue] = useState(''); 
     const [isFocus, setIsFocus] = useState(false); 
 
@@ -21,17 +22,14 @@ const NumericInput = (props: NumericInputParams) => {
 
     const inputLabel = props.label; // Store the label from props
     const propsOnChange = props.onChange; // Store the onChange function from props
+    const iconName = props.icon;
+    const isPassword = props.secure;
 
-    // function that on text change deletes the characters that are not numbers
     const handleTextChange = (text: string) => {
-        const numericValue = text.replace(/[^0-9]/g, ''); 
-        propsOnChange(numericValue); 
-        setValue(numericValue); 
+        propsOnChange(text); 
+        setValue(text); 
     };
 
-    const handleSave = () => {
-        Keyboard.dismiss(); // Dismiss the keyboard when the save button is pressed
-    };
 
     const renderLabel = () => {
         if (value) {
@@ -47,10 +45,10 @@ const NumericInput = (props: NumericInputParams) => {
     return (
         <View style={styles.container}>
             <View style={[styles.outlineContainer, isFocus && { borderColor: mainColor }]}>
-                <Fontisto
+                <FontAwesome
                     style={styles.icon}
                     color={isFocus ? mainColor : 'black'}
-                    name='euro'
+                    name={iconName}
                     size={14}
                 />
                 {renderLabel()}
@@ -58,15 +56,12 @@ const NumericInput = (props: NumericInputParams) => {
                     style={styles.input}
                     value={value}
                     onChangeText={handleTextChange}
-                    keyboardType="numeric"
                     placeholder={`Enter ${inputLabel}`}
                     onFocus={() => setIsFocus(true)}
                     onBlur={() => setIsFocus(false)}
                     placeholderTextColor="black"
+                    secureTextEntry={isPassword}
                 />
-                <TouchableOpacity style={[styles.button, {backgroundColor: mainColor}]} onPress={handleSave}>
-                    <MaterialIcons size={20} color="white" name="check"/>
-                </TouchableOpacity>
             </View>
         </View>
     );
@@ -118,4 +113,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NumericInput;
+export default PrettyTextInput;

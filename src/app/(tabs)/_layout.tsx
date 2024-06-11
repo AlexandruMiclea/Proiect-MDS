@@ -24,7 +24,7 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-      <Tabs.Screen name="index" options={{ href: null }} />
+      <Tabs.Screen name="index" options={{ href: null, headerShown: false }} />
 
       <Tabs.Screen
         name="explore"
@@ -43,6 +43,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="plane" size={size} color={color} />
           ),
+          headerTintColor: Colors.light.tint,
         }}
       />
 
@@ -53,6 +54,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="suitcase" size={size} color={color} />
           ),
+          headerTintColor: Colors.light.tint,
         }}
       />
 
@@ -61,6 +63,7 @@ export default function TabLayout() {
         options={{
           title: 'Map',
           tabBarIcon: ({ color }) => <TabBarIcon name="globe" color={color} />,
+          headerTintColor: Colors.light.tint
         }}
       />
     </Tabs>

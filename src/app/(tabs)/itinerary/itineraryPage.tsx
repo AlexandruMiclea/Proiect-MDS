@@ -23,15 +23,21 @@ const ItineraryPage = () => {
     const [buttonVisible, setButtonVisible] = useState(true);
     const colorScheme = useColorScheme();
     const mainColor = Colors[colorScheme ?? 'light'].tint;
-
+    const [cityLat, setCityLat] = useState<string | null>(null);
+    const [cityLon, setCityLon] = useState<string | null>(null);
+    const [currentTemperature, setCurrentTemperature] = useState(null);
 
     useEffect(() => {
         const getCoordinates = () => {
             let answer = "";
-            if (params.country != undefined) {
-                for (let city of countriesCities[params.country?.toString()]) {
-                    if (params.city != undefined && city.name === params.city) {
-                        answer += city.lat + ',' + city.lon;
+            if (params.country != undefined){
+                for (let city of countriesCities[params.country?.toString()]){
+                    if (params.city != undefined) {
+                        if (city.name === params.city) {
+                            answer += city.lat + ',' + city.lon;
+                            setCityLat(city.lat);
+                            setCityLon(city.lon);
+                        }
                     }
                 }
             }

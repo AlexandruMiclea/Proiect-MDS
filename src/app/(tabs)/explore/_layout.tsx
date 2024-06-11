@@ -5,25 +5,28 @@ import Colors from "@/constants/Colors";
 
 export default function MenuStack() {
 
-    return (
-        <Stack screenOptions={{
-            headerRight: () => (
-                <Link href="/Profile" asChild>
-                  <Pressable>
-                    {({ pressed }) => (
-                      <FontAwesome
-                        name="user-circle"
-                        size={24}
-                        color={Colors.light.tint}
-                        style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                      />
-                    )}
-                  </Pressable>
-                </Link>
-              ),
-              headerBackTitleVisible: false
-        }}>
-            <Stack.Screen name="index" options={{title: 'Explore'}}/>
-        </Stack>
-    );
+  return (
+    <Stack screenOptions={{
+      // Customizing the header right component
+      headerRight: () => (
+        <Link href="/Profile" asChild>
+          <Pressable>
+          {({ pressed }) => (
+            // User profile icon with fontawesome
+            <FontAwesome
+            name="user-circle"
+            size={24}
+            color={Colors.light.tint}
+            style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+            />
+          )}
+          </Pressable>
+        </Link>
+        ),
+        headerBackTitleVisible: false,
+        headerTintColor: Colors.light.tint
+    }}>
+      <Stack.Screen name="index" options={{title: 'Explore'}}/>
+    </Stack>
+  );
 }

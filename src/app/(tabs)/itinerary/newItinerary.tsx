@@ -1,112 +1,124 @@
-import React, { useState } from "react";
-import DropdownComponent from "@/components/Dropdown";
+import React, { useState, useCallback } from "react";
 import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
-import countriesNamesJson from '@assets/data/countriesNames.json';
-import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import { DatePickerModal } from "react-native-paper-dates";
 import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useRouter } from "expo-router";
+
+import DropdownComponent from "@/components/Dropdown";
+import NumericInput from "@/components/NumericInput";
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
-import NumericInput from "@/components/NumericInput";
-import { en, registerTranslation } from 'react-native-paper-dates';
-import { useRouter } from "expo-router"
 
-registerTranslation('en', en)
+import countriesNamesJson from '@assets/data/countriesNames.json';
+import countriesCitiesJson from '@assets/data/countriesInfo.json';
+
+import { en, registerTranslation } from 'react-native-paper-dates';
+
+registerTranslation('en', en);
 
 const countriesNames = JSON.parse(JSON.stringify(countriesNamesJson));
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
 const NewItinerary = () => {
   const router = useRouter();
-
-  const [country, setCountry] = useState<string>('');
-  const [city, setCity] = useState<string | null>(null);
-
-  const [range, setRange] = React.useState<{ startDate: CalendarDate, endDate: CalendarDate }>({ startDate: undefined, endDate: undefined });
-  const [open, setOpen] = React.useState(false);
-
-  const [budget, setBudget] = useState<string>('');
-
   const colorScheme = useColorScheme();
   const mainColor = Colors[colorScheme ?? 'light'].tint;
 
-const calendarOnDismiss = React.useCallback(() => {
-  setOpen(false);
-}, [setOpen]);
+  const [country, setCountry] = useState<string>('');
+  const [city, setCity] = useState<string | null>(null);
+  const [range, setRange] = useState<{ startDate: CalendarDate, endDate: CalendarDate }>({ startDate: undefined, endDate: undefined });
+  const [open, setOpen] = useState(false);
+  const [budget, setBudget] = useState<string>('');
 
-const calendarOnConfirm = React.useCallback(
-  ({ startDate, endDate }: { startDate: CalendarDate, endDate: CalendarDate }) => {
-    setOpen(false);
-    setRange({ startDate: startDate, endDate: endDate });
-  },
-  [setOpen, setRange]
-);
+  // Callback function to handle calendar dismissal & confirmations
+  const calendarOnDismiss = useCallback(() => setOpen(false), []);
+  const calendarOnConfirm = React.useCallback(
+    ({ startDate, endDate }: { startDate: CalendarDate, endDate: CalendarDate }) => {
+      setOpen(false);
+      setRange({ startDate: startDate, endDate: endDate });
+    },
+    [setOpen, setRange]
+  );
 
-const handleCountryChange = (selectedCountry: string) => {
-  setCountry(selectedCountry);
-  setCity(null);
-};
+   // Function to handle country change in the dropdown
+  const handleCountryChange = (selectedCountry: string) => {
+    setCountry(selectedCountry);
+    setCity(null);
+  };
 
-const validateInputs = () => {
-  if (!country) {
-    Alert.alert('Validation Error', 'Please select a country.');
-    return false;
-  }
-  if (!city) {
-    Alert.alert('Validation Error', 'Please select a city.');
-    return false;
-  }
-  if (!range.startDate || !range.endDate) {
-    Alert.alert('Validation Error', 'Please select a date range.');
-    return false;
-  }
-  if (!budget) {
-    Alert.alert('Validation Error', 'Please enter a budget.');
-    return false;
-  }
-  if (parseInt(budget) < 100) {
-    Alert.alert('Validation Error', 'Please enter a budget bigger than 100.');
-    return false;
-  }
-  return true;
-};
+    // Function to validate user inputs
+  const validateInputs = () => {
+    if (!country) return showAlert('Please select a country.');
+    if (!city) return showAlert('Please select a city.');
+    if (!range.startDate || !range.endDate) return showAlert('Please select a date range.');
+    if (!budget) return showAlert('Please enter a budget.');
+    if (parseInt(budget) < 100) return showAlert('Please enter a budget bigger than 100.');
+    return true;
+  };
 
-const logInfo = () => {
-  if (validateInputs()) {
+  const showAlert = (message: string) => {
+    Alert.alert('Validation Error', message);
+    return false;
+  };
+
+   // Function to log the user's selected information
+  const logInfo = () => {
     console.log(
-      "Country: " + country + '\n' + 
-      "City: " + city + '\n' + 
-      "Start date & End date: " + range.startDate?.toLocaleDateString() + " - " + range.endDate?.toLocaleDateString() + '\n' +
-      "Budget: " + budget + '\n'
+      `Country: ${country}\nCity: ${city}\nStart date & End date: ${range.startDate?.toLocaleDateString()} - ${range.endDate?.toLocaleDateString()}\nBudget: ${budget}`
     );
-  }
-};
+  };
 
-const validRange = {
-  startDate: new Date(),
-  endDate: undefined,
-  disabledDates: undefined
-};
-
+  // Function to handle form submission
   const handleSubmit = () => {
     if (validateInputs()) {
-      router.navigate({pathname: "itinerary/itineraryPage", params: {country: country, city: city, startDate: range.startDate?.toLocaleDateString(), endDate: range.endDate?.toLocaleDateString(), budget: budget}})
+      router.navigate({
+        pathname: "itinerary/itineraryPage",
+        params: { 
+          country, 
+          city, 
+          startDate: range.startDate?.toLocaleDateString(), 
+          endDate: range.endDate?.toLocaleDateString(), 
+          budget 
+        }
+      });
       logInfo();
     }
-
-  }
+  };
 
   return (
     <View style={styles.mainContainer}>
-      <DropdownComponent label='country' labelField="name" valueField="name" dropdownData={countriesNames} onChange={handleCountryChange} iconName="earth"></DropdownComponent>
-      <DropdownComponent label='city' labelField="name" valueField="name" dropdownData={countriesCities[country]} onChange={setCity} iconName="city"></DropdownComponent>
-
+      {/* Dropdown for selecting country */}
+      <DropdownComponent 
+        label='country' 
+        labelField="name" 
+        valueField="name" 
+        dropdownData={countriesNames} 
+        onChange={handleCountryChange} 
+        iconName="earth" 
+      />
+      {/* Dropdown for selecting city */}
+      <DropdownComponent 
+        label='city' 
+        labelField="name" 
+        valueField="name" 
+        dropdownData={countriesCities[country]} 
+        onChange={setCity} 
+        iconName="city" 
+      />
       <View style={styles.calendarContainer}>
         <View style={styles.calendarBorder}>
-          <Text style={styles.intervalText}>Trip interval: {range.startDate?.toLocaleDateString()} - {range.endDate?.toLocaleDateString()}</Text>
-          <TouchableOpacity onPress={() => setOpen(true)} style={[styles.button, { backgroundColor: mainColor }]}>
+          {/* Display selected date range */}
+          <Text style={styles.intervalText}>
+            Trip interval: {range.startDate?.toLocaleDateString()} - {range.endDate?.toLocaleDateString()}
+          </Text>
+          {/* Button to open date picker */}
+          <TouchableOpacity 
+            onPress={() => setOpen(true)} 
+            style={[styles.button, { backgroundColor: mainColor }]}
+          >
             <FontAwesome size={18} color="white" name="calendar-o" />
+            {/* Date picker modal */}
             <DatePickerModal
               locale="en"
               mode="range"
@@ -118,7 +130,7 @@ const validRange = {
               onConfirm={calendarOnConfirm}
               startYear={2023}
               endYear={2025}
-              validRange={validRange}
+              validRange={{ startDate: new Date() }}
               saveLabel="Save"
               label='Choose your vacation interval'
               presentationStyle='pageSheet'
@@ -126,9 +138,10 @@ const validRange = {
           </TouchableOpacity>
         </View>
       </View>
-      <NumericInput label='budget' onChange={setBudget}></NumericInput>
-
+      {/* Numeric input for budget */}
+      <NumericInput label='budget' onChange={setBudget} />
       <View style={styles.createButtonContainer}>
+        {/* Button to submit the form */}
         <TouchableOpacity
           onPress={handleSubmit}
           style={[styles.createButton, { backgroundColor: mainColor }]}
@@ -138,11 +151,9 @@ const validRange = {
       </View>
     </View>
   );
-      
-}
+};
 
 export default NewItinerary;
-
 
 const styles = StyleSheet.create({
   createButtonContainer: {
@@ -151,10 +162,9 @@ const styles = StyleSheet.create({
     bottom: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
   },
   createButton: {
-    
     display: 'flex',
     width: '80%',
     height: '100%',
@@ -165,16 +175,10 @@ const styles = StyleSheet.create({
     color: 'white',
     paddingVertical: 14,
   },
-  budgetInput: {
-    borderWidth: 1,
-    borderColor: '#777',
-    padding: 8,
-    margin: 10,
-    width: 200,
-  },
   mainContainer: {
     margin: 8,
     height: '100%',
+    backgroundColor: 'white',
   },
   intervalText: {
     fontSize: 16,
@@ -182,7 +186,6 @@ const styles = StyleSheet.create({
     left: 14,
   },
   button: {
-    backgroundColor: 'gray',
     padding: 1,
     justifyContent: 'center',
     height: '72%',
@@ -195,7 +198,6 @@ const styles = StyleSheet.create({
   },
   calendarContainer: {
     padding: 16,
-    backgroundColor: 'white',
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -208,11 +210,4 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: 'gray',
   },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-})
+});
