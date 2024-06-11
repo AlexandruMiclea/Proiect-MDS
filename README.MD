@@ -51,7 +51,37 @@ We created them to better understand the designs, code architecture, and propose
 
 # Design patterns
 
-placeholder
+We implemented a design pattern that gives us the current authenticated user (called session) and either passes it down as a parameter to nested children components, or can be returned by the ```useAuth()``` hook.
+
+We used both of the afforementioned approaches in our code. Passing the session to the nested children in the app is done like this:
+
+```
+src/app/_layout.tsx:
+```
+
+```typescript
+return (
+    <AuthProvider>
+      <Stack>
+        // all pages in this stack can receive the current session as a parameter
+      </Stack>
+    </AuthProvider>
+);
+```
+
+Then we can obtain the session in one of our renders:
+
+```typescript
+export default function Account({ session }: { session: Session }){
+  // we can access session here
+}
+```
+
+Or by calling the ```useAuth()``` hook:
+
+```typescript
+const { session } = useAuth();
+```
 
 # Usage of an AI tool
 
