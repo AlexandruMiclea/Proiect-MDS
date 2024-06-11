@@ -14,6 +14,8 @@ const ItineraryPage = () => {
     const [loaded, setLoaded] = useState(false);
     const [locationData, setLocationData] = useState<sampleLocationData[]>([]);
     const searchValueList = ["art gallery", "museum", "monument"]; // TODO add more
+    const [cityLat, setCityLat] = useState<string | null>(null);
+    const [cityLon, setCityLon] = useState<string | null>(null);
     const [currentTemperature, setCurrentTemperature] = useState(null);
 
     // useEffect is used for handling asynchronous operations. In our case, we want
@@ -26,6 +28,8 @@ const ItineraryPage = () => {
                     if (params.city != undefined) {
                         if (city.name === params.city) {
                             answer += city.lat + ',' + city.lon;
+                            setCityLat(city.lat);
+                            setCityLon(city.lon);
                         }
                     }
                 }
