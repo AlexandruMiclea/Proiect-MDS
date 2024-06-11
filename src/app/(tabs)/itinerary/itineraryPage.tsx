@@ -45,12 +45,17 @@ const ItineraryPage = () => {
                 radius: 20,
                 radiusUnit: "km"
             };
+            let updatedLocationData = [...locationData]; //local copy of the current state and used for processing duplicates to avoid issues with async state updates (locationData is state managed with useState) 
             for (var searchValue of searchValueList){
                 query.searchQuery = searchValue;
                 const ans = await getAttractions({reqParams : query});
                 // TODO for now I get 3 of each. We should add more based on the sliders of the authenticated user
                 for (var location of ans.data.slice(0, 3)){
                     console.log(location.name);
+                    if (updatedLocationData.some(loc => loc.title === location.name)) {
+                        console.log(`Skipping location: ${location.name} because it's a duplicate`);
+                        continue; 
+                    }
                     let imgQuery: PhotoQuery = {
                         key: apiKey,
                         language: "en",
@@ -62,17 +67,19 @@ const ItineraryPage = () => {
                     var newLocation : sampleLocationData = {
                         title: location.name, 
                         address: location.address_obj.address_string, 
-                        description: "", images: urls
+                        description: "", 
+                        images: urls
                     }
-                    setLocationData(locationData => [...locationData, newLocation]);
+                    updatedLocationData.push(newLocation);
                 }
             }
+            setLocationData(updatedLocationData);
             // TODO for each location get requests for the picture and description
             // TODO we can also get cost
             setLoaded(true);
         }
         itineraryDataCall();
-    }, [setLoaded, setLocationData])
+    }, [setLoaded])
 
     //i need lat and lng to work
     // useEffect(()=>{
