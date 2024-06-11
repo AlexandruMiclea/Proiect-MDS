@@ -17,6 +17,7 @@ const ItineraryPage = () => {
     const [cityLat, setCityLat] = useState<string | null>(null);
     const [cityLon, setCityLon] = useState<string | null>(null);
     const [currentTemperature, setCurrentTemperature] = useState(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     // useEffect is used for handling asynchronous operations. In our case, we want
     // to wait for the Tripadvisor API calls to be completed
@@ -51,7 +52,7 @@ const ItineraryPage = () => {
                 const ans = await getAttractions({reqParams : query});
                 // TODO for now I get 3 of each. We should add more based on the sliders of the authenticated user
                 for (var location of ans.data.slice(0, 3)){
-                    console.log(location.name);
+                    
                     if (updatedLocationData.some(loc => loc.title === location.name)) {
                         console.log(`Skipping location: ${location.name} because it's a duplicate`);
                         continue; 
@@ -62,8 +63,13 @@ const ItineraryPage = () => {
                         limit: 3 // TODO can be changed
                     }
                     const photoAns = await getPhotos({locationId: location.location_id, reqParams: imgQuery});
+                    if (!photoAns)  {
+                        setErrorMessage("Locations for this city are missing necessary data. Please try again with another city.");
+                        return;
+                    }
                     var urls: [{imageUrl: string}?] = [];
                     photoAns.data.forEach(x => urls.push({imageUrl: x.images.large.url}));
+
                     var newLocation : sampleLocationData = {
                         title: location.name, 
                         address: location.address_obj.address_string, 
@@ -74,40 +80,42 @@ const ItineraryPage = () => {
                 }
             }
             setLocationData(updatedLocationData);
-            // TODO for each location get requests for the picture and description
             // TODO we can also get cost
             setLoaded(true);
         }
         itineraryDataCall();
     }, [setLoaded])
 
-    //i need lat and lng to work
-    // useEffect(()=>{
-    //     const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m`;
-    //     const fetchCurrentWeather = async () => {
-    //         try {
-    //             const response = await fetch(url);
-    //             if (!response.ok){
-    //                 return;
-    //             }
-    //             const data = await response.json();
-    //             setCurrentTemperature(data.current.temperature_2m);
-    //         } catch (error){
-    //             console.error("Error fetching current temperature: ", error);
-    //         }
-    //     }
-    //     fetchCurrentWeather();
-    // }, [])
+    useEffect(()=>{
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${cityLat}&longitude=${cityLon}&current=temperature_2m`;
+        const fetchCurrentWeather = async () => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok){
+                    return;
+                }
+                const data = await response.json();
+                setCurrentTemperature(data.current.temperature_2m);
+            } catch (error){
+                console.error("Error fetching current temperature: ", error);
+            }
+        }
+        fetchCurrentWeather();
+    }, [setLoaded])
 
     if (!loaded) {
-        // TODO change loading screen circle color
         return (<View style={styles.loadingScreen}>
             <ActivityIndicator size="large" color="#7975F8"></ActivityIndicator>
         </View>)
     } else {
         return (
         <View>
+            {errorMessage 
+            ? 
+            <div className="error-message">{errorMessage}</div>
+            : 
             <LocationList locations={locationData}/>
+            }   
         </View>)
     }
 }
