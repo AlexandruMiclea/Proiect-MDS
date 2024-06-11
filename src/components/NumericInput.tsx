@@ -1,3 +1,4 @@
+// custom component for a numeric input because react native does not have one sadly
 import React, { useState } from 'react';
 import { TextInput, StyleSheet, View, TouchableOpacity, Text, Keyboard } from 'react-native';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -11,23 +12,25 @@ type NumericInputParams = {
 
 const NumericInput = (props: NumericInputParams) => {
 
-    const [value, setValue] = useState('');
-    const [isFocus, setIsFocus] = useState(false);
+    // State variable
+    const [value, setValue] = useState(''); 
+    const [isFocus, setIsFocus] = useState(false); 
 
     const colorScheme = useColorScheme();
-    const mainColor = Colors[colorScheme ?? 'light'].tint;
+    const mainColor = Colors[colorScheme ?? 'light'].tint; 
 
-    const inputLabel = props.label;
-    const propsOnChange = props.onChange;
+    const inputLabel = props.label; // Store the label from props
+    const propsOnChange = props.onChange; // Store the onChange function from props
 
+    // function that on text change deletes the characters that are not numbers
     const handleTextChange = (text: string) => {
-        const numericValue = text.replace(/[^0-9]/g, '');
-        propsOnChange(numericValue);
-        setValue(numericValue);
+        const numericValue = text.replace(/[^0-9]/g, ''); 
+        propsOnChange(numericValue); 
+        setValue(numericValue); 
     };
 
     const handleSave = () => {
-        Keyboard.dismiss(); 
+        Keyboard.dismiss(); // Dismiss the keyboard when the save button is pressed
     };
 
     const renderLabel = () => {
@@ -39,7 +42,7 @@ const NumericInput = (props: NumericInputParams) => {
           );
         }
         return null;
-      };
+    };
 
     return (
         <View style={styles.container}>
@@ -65,7 +68,6 @@ const NumericInput = (props: NumericInputParams) => {
                     <MaterialIcons size={20} color="white" name="check"/>
                 </TouchableOpacity>
             </View>
-            
         </View>
     );
 };
@@ -84,15 +86,14 @@ const styles = StyleSheet.create({
     },
     label: {
         position: 'absolute',
-        backgroundColor: 'white',
         left: 6,
         top: -8,
         zIndex: 999,
         paddingHorizontal: 8,
         fontSize: 14,
+        backgroundColor: 'white',
     },
     container: {
-        backgroundColor: 'white',
         padding: 16,
         flexDirection: 'row',
         alignItems: 'center',

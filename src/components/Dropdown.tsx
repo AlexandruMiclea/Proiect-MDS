@@ -14,7 +14,7 @@ type DropdownProps = {
   iconName: string;
 }
 
-
+// DropdownComponent functional component
 const DropdownComponent = (props: DropdownProps) => {
   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -29,6 +29,7 @@ const DropdownComponent = (props: DropdownProps) => {
 
   const iconName = props.iconName;
 
+  // Function to render the label when the dropdown is opened
   const renderLabel = () => {
     if (value || isFocus) {
       return (
@@ -81,7 +82,6 @@ export default DropdownComponent;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
     padding: 16,
   },
   dropdown: {
