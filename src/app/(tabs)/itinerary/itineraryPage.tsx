@@ -8,6 +8,9 @@ import { Pressable, Button, View, Text, ActivityIndicator, StyleSheet, GestureRe
 import LocationList from './locationList';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/app/providers/AuthProvider";
+import Colors from '@/constants/Colors';
+import { useColorScheme } from '@/components/useColorScheme';
+import { red } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
@@ -18,7 +21,8 @@ const ItineraryPage = () => {
     const { session } = useAuth();
     const searchValueList = ["art gallery", "museum", "monument"]; // TODO add more
     const [buttonVisible, setButtonVisible] = useState(true);
-
+    const colorScheme = useColorScheme();
+    const mainColor = Colors[colorScheme ?? 'light'].tint;
 
 
     useEffect(() => {
@@ -131,9 +135,12 @@ const ItineraryPage = () => {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 {buttonVisible && (
-                    <Pressable style={styles.button_style} onPress={handleSave}>
-                        <Text style={styles.buttonText}>Save</Text>
-                    </Pressable>
+                    <Pressable 
+    style={{...styles.button_save, backgroundColor: mainColor}} 
+    onPress={handleSave}
+>
+    <Text style={styles.buttonText}>Save</Text>
+</Pressable>
                 )}
                 <Text style={styles.label}>{params.city}, {params.country}</Text>
                 <Text style={styles.label}>{params.startDate} - {params.endDate}</Text>
@@ -169,4 +176,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 10,
       },
+    button_save: { 
+        width: '60%', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        height: 50, // Add height to ensure proper vertical centering
+        padding: 10,
+        marginTop: 20,
+        marginBottom:10,
+        borderRadius: 14
+    }
 });
