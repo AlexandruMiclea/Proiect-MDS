@@ -154,8 +154,6 @@ const ItineraryPage = () => {
             title: params.city,
             description: `Itinerary for ${params.city}, ${params.country}`,
             address: '',
-            calendarId: newCalendarID,
-            eventId
         };
 
         const { error: locationError } = await supabase.from('locations').insert([locationData]);
