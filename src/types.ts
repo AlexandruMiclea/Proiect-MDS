@@ -97,9 +97,5 @@ export type sampleLocationData = {
     title: string,
     description: string,
     address: string,
-    images: [
-        {
-            imageUrl: string
-        }?,
-    ]
+    images: Array<{ imageUrl: string | null }>;
 };
