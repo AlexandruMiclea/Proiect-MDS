@@ -27,6 +27,7 @@ const ItineraryPage = () => {
     const [cityLon, setCityLon] = useState<string | null>(null);
     const [currentTemperature, setCurrentTemperature] = useState(null);
 
+    // Get the current temperature of the city
     useEffect(() => {
         const getCoordinates = () => {
             let answer = "";
@@ -43,7 +44,7 @@ const ItineraryPage = () => {
             }
             return answer;
         };
-
+        // Get the coordinates of the city
         const itineraryDataCall = async () => {
             let query: LocationQuery = {
                 key: apiKey,
@@ -68,7 +69,7 @@ const ItineraryPage = () => {
                     var urls: Array<{ imageUrl: string | null }> = [];
                     photoAns.data.forEach(x => urls.push({ imageUrl: x.images.large.url }));
                     var newLocation: sampleLocationData = {
-                        title: location.name,
+                        title: location.name, // Now matches the updated type definition
                         address: location.address_obj.address_string,
                         description: "",
                         images : urls// Now matches the updated type definition
@@ -81,7 +82,7 @@ const ItineraryPage = () => {
 
         itineraryDataCall();
     }, [setLoaded, setLocationData]);
-
+    
     if (!loaded) {
         return (
             <View style={styles.loadingScreen}>
@@ -104,11 +105,13 @@ const ItineraryPage = () => {
 
             const { data: newItinerary, error: itineraryError } = await supabase.from('itineraries').insert([itineraryData]).select();
 
+            // If there was an error saving the itinerary, log it and return
             if (itineraryError) {
                 console.error("Error saving itinerary:", itineraryError);
                 return;
             }
 
+            // Get the ID of the new itinerary
             const newItineraryId = newItinerary[0].id;
 
             const locationPromises = locationData.map(loc => {
@@ -126,7 +129,7 @@ const ItineraryPage = () => {
 
                 return supabase.from('locations').insert([locationData]);
             });
-
+            // Wait for all locations to be saved
             const locationResults = await Promise.all(locationPromises);
 
             locationResults.forEach(({ error }) => {
@@ -141,12 +144,9 @@ const ItineraryPage = () => {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 {buttonVisible && (
-                    <Pressable 
-    style={{...styles.button_save, backgroundColor: mainColor}} 
-    onPress={handleSave}
->
-    <Text style={styles.buttonText}>Save</Text>
-</Pressable>
+                <Pressable style={{...styles.button_save, backgroundColor: mainColor}} onPress={handleSave}>
+                    <Text style={styles.buttonText}>Save</Text>
+                </Pressable>
                 )}
                 <Text style={styles.label}>{params.city}, {params.country}</Text>
                 <Text style={styles.label}>{params.startDate} - {params.endDate}</Text>

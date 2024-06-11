@@ -93,6 +93,7 @@ function RootLayoutNav() {
           <Stack.Screen name="(profile)/Profile" options={{ headerShown: true, headerTitle: "Profile Page", headerTintColor: Colors.light.tint}}/>
           <Stack.Screen name="(profile)/ProfileSettings" options={{ headerShown: true, headerTitle: "Account Settings", headerTintColor: Colors.light.tint}}/>
           <Stack.Screen name="(profile)/PreferenceSettings" options={{ headerShown: true, headerTitle: "Trip Preferences", headerTintColor: Colors.light.tint}}/>
+          <Stack.Screen name="(profile)/Donation" options={{ headerShown: true, headerTitle: "Donation", headerTintColor: Colors.light.tint}}/>
         </Stack>
       </AuthProvider>
     </ThemeProvider>
