@@ -4,7 +4,7 @@ import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import { LocationQuery, LocationObj, PhotoQuery, sampleLocationData } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Button, View, Text, ActivityIndicator, StyleSheet, GestureResponderEvent } from 'react-native';
+import { Pressable, Button, View, Text, ActivityIndicator, StyleSheet, GestureResponderEvent, Alert } from 'react-native';
 import LocationList from './locationList';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/app/providers/AuthProvider";
@@ -19,7 +19,7 @@ const ItineraryPage = () => {
     const [loaded, setLoaded] = useState(false);
     const [locationData, setLocationData] = useState<sampleLocationData[]>([]);
     const { session } = useAuth();
-    const searchValueList = ["art gallery", "museum", "monument"]; // TODO add more
+    const searchValueList = [["stadium", "attractions"], ["museum", "attractions"], ["restaurant", "restaurants"]]; // TODO add more
     const [buttonVisible, setButtonVisible] = useState(true);
     const colorScheme = useColorScheme();
     const mainColor = Colors[colorScheme ?? 'light'].tint;
@@ -45,29 +45,77 @@ const ItineraryPage = () => {
         };
 
         const itineraryDataCall = async () => {
+            if (!session?.user) throw new Error("No user on the session!");
+        
+            const { data, error, status } = await supabase
+                .from("profiles")
+                .select(
+                `preference_sports, preference_food, preference_arts, preference_itinerary_complexity`
+                )
+                .eq("id", session?.user.id)
+                .single();
+            if (error && status !== 406) {
+                console.log(error);
+                throw error;
+            }
+        
+            let PreferenceSport = data?.preference_sports;
+            let PreferenceArts = data?.preference_arts;
+            let PreferenceFood = data?.preference_food;
+            let ItineraryComplexity = data?.preference_itinerary_complexity;
+
             let query: LocationQuery = {
                 key: apiKey,
                 searchQuery: "",
-                category: "attractions",
+                category: "",
                 latLong: getCoordinates(),
                 radius: 20,
                 radiusUnit: "km"
             };
             let updatedLocationData = [...locationData]; //local copy of the current state and used for processing duplicates to avoid issues with async state updates (locationData is state managed with useState) 
+            var idxList = 0; // 0 to 2, 0 -> sports, 1 -> attractions, 2 -> food
+            var avgPrefs = ((1 + PreferenceSport) + (1 + PreferenceArts) + (1 + PreferenceFood)) / 3;
+            console.log("sumprefs: " + avgPrefs);
+            var numberOfLocations = 0;
+            var targetLocationNo = 1 + (2 * ItineraryComplexity);
+            console.log("tlno: " + targetLocationNo);
             for (var searchValue of searchValueList){
-                query.searchQuery = searchValue;
+                switch(idxList) {
+                    case 0:
+                        numberOfLocations = Math.ceil((1 + PreferenceSport) / (10 - targetLocationNo));
+                        console.log(0 + " " + numberOfLocations);
+                        break;
+                    case 1:
+                        numberOfLocations = Math.ceil((1 + PreferenceArts) / (10 - targetLocationNo));
+                        console.log(1 + " " + numberOfLocations);
+                        break;
+                    case 2:
+                        numberOfLocations = Math.ceil((1 + PreferenceFood) / (10 - targetLocationNo));
+                        console.log(2 + " " + numberOfLocations);
+                        break;
+                    default:
+                        break;
+                }
+                query.searchQuery = searchValue[0];
+                query.category = searchValue[1];
                 const ans = await getAttractions({reqParams : query});
+                console.log("now number of locations")
                 // TODO for now I get 3 of each. We should add more based on the sliders of the authenticated user
-                for (var location of ans.data.slice(0, 3)){
+                for (var location of ans.data){
+                    if (numberOfLocations === 0) {
+                        break;
+                    }
                     console.log(location.name);
                     if (updatedLocationData.some(loc => loc.title === location.name)) {
                         console.log(`Skipping location: ${location.name} because it's a duplicate`);
                         continue; 
                     }
+                    numberOfLocations -= 1;
+                    console.log(numberOfLocations);
                     let imgQuery: PhotoQuery = {
                         key: apiKey,
                         language: "en",
-                        limit: 3 // TODO can be changed
+                        limit: 3
                     }
                     const photoAns = await getPhotos({locationId: location.location_id, reqParams: imgQuery});
                     var urls: [{imageUrl: string}?] = [];
@@ -80,13 +128,13 @@ const ItineraryPage = () => {
                     }
                     updatedLocationData.push(newLocation);
                 }
+                idxList += 1;
             }
             setLocationData(updatedLocationData);
             // TODO for each location get requests for the picture and description
             // TODO we can also get cost
             setLoaded(true);
         };
-
         itineraryDataCall();
     }, [setLoaded])
 
