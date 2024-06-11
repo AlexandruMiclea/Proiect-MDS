@@ -4,22 +4,26 @@ import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import { LocationQuery, LocationObj, PhotoQuery, sampleLocationData } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Button, View, Text, ActivityIndicator, StyleSheet, GestureResponderEvent } from 'react-native';
+import { Pressable, View, Text, ActivityIndicator, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
 import LocationList from './locationList';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/app/providers/AuthProvider";
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { red } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
+//import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
+import * as Calendar from 'expo-calendar'; // Import the calendar module
 
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
+/**
+ * Represents the Itinerary Page component.
+ */
 const ItineraryPage = () => {
     const params = useLocalSearchParams();
     const [loaded, setLoaded] = useState(false);
     const [locationData, setLocationData] = useState<sampleLocationData[]>([]);
     const { session } = useAuth();
-    const searchValueList = ["art gallery", "museum", "monument"]; // TODO add more
+    const searchValueList = ["art gallery", "museum", "monument"]; 
     const [buttonVisible, setButtonVisible] = useState(true);
     const colorScheme = useColorScheme();
     const mainColor = Colors[colorScheme ?? 'light'].tint;
@@ -29,6 +33,23 @@ const ItineraryPage = () => {
 
     // Get the current temperature of the city
     useEffect(() => {
+        (async () => {
+            // Request permission to access calendars
+            const { status } = await Calendar.requestCalendarPermissionsAsync();
+            if (status !== 'granted') {
+                console.log('Permission to access calendars denied');
+                return;
+            }
+
+            // Permission granted, proceed with loading data
+            loadData();
+        })();
+    }, []);
+
+    /**
+     * Loads the data for the itinerary page.
+     */
+    const loadData = async () => {
         const getCoordinates = () => {
             let answer = "";
             if (params.country != undefined){
@@ -44,16 +65,18 @@ const ItineraryPage = () => {
             }
             return answer;
         };
+
         // Get the coordinates of the city
         const itineraryDataCall = async () => {
             let query: LocationQuery = {
                 key: apiKey,
-                searchQuery: "",
+                searchQuery: searchValue,
                 category: "attractions",
                 latLong: getCoordinates(),
                 radius: 20,
                 radiusUnit: "km"
             };
+            const ans = await getAttractions({ reqParams: query });
 
             for (var searchValue of searchValueList) {
                 query.searchQuery = searchValue;
@@ -103,7 +126,9 @@ const ItineraryPage = () => {
                 budget: params.budget
             };
 
-            const { data: newItinerary, error: itineraryError } = await supabase.from('itineraries').insert([itineraryData]).select();
+
+        const { data: newItinerary, error: itineraryError } = await supabase.from('itineraries').insert([itineraryData]).select();
+
 
             // If there was an error saving the itinerary, log it and return
             if (itineraryError) {
@@ -132,15 +157,61 @@ const ItineraryPage = () => {
             // Wait for all locations to be saved
             const locationResults = await Promise.all(locationPromises);
 
-            locationResults.forEach(({ error }) => {
-                if (error) {
-                    console.error("Error saving location:", error);
-                }
-            });
+        const defaultCalendarSource =
+            Platform.OS === 'ios'
+            ? await getDefaultCalendarSource()
+            : { isLocalAccount: true, name: 'Expo Calendar' };
+            const newCalendarID = await Calendar.createCalendarAsync({
+            title: 'Trip Itinerary',
+            color: mainColor,
+            entityType: Calendar.EntityTypes.EVENT,
+            sourceId: defaultCalendarSource.id,
+            source: defaultCalendarSource,
+            name: 'Trip Itinerary',
+            ownerAccount: 'personal',
+            accessLevel: Calendar.CalendarAccessLevel.OWNER,
+        });
+        console.log(`Your new calendar ID is: ${newCalendarID}`);
 
-            console.log("Data saved successfully");
+        const startDateParts = params.startDate.split('.');
+        const today = new Date(Number(startDateParts[2]), Number(startDateParts[1]) - 1, Number(startDateParts[0]));
+        const endDateParts = params.endDate.split('.');
+        const tomorrow = new Date(Number(endDateParts[2]), Number(endDateParts[1]) - 1, Number(endDateParts[0]));
+
+        const details = {
+            title: params.city,
+            startDate: today,
+            endDate: tomorrow,
+            notes: `Itinerary for ${params.city}, ${params.country}`,
+            location: ''
+        };
+
+        const eventId = await Calendar.createEventAsync(newCalendarID, details);
+
+        // Save the event ID in the database
+        const locationData = {
+            id_itinerar: newItineraryId,
+            title: params.city,
+            description: `Itinerary for ${params.city}, ${params.country}`,
+            address: '',
+        };
+
+        const { error: locationError } = await supabase.from('locations').insert([locationData]);
+
+        if (locationError) {
+            console.error("Error saving location:", locationError);
         }
 
+        console.log("Data saved successfully");
+    }
+
+    if (!loaded) {
+        return (
+            <View style={styles.loadingScreen}>
+                <ActivityIndicator size="large" color="tint" />
+            </View>
+        );
+    } else {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 {buttonVisible && (
@@ -181,7 +252,7 @@ const styles = StyleSheet.create({
     label: {
         fontWeight: 'bold',
         marginTop: 10,
-      },
+    },
     button_save: { 
         width: '60%', 
         alignItems: 'center', 
@@ -193,3 +264,8 @@ const styles = StyleSheet.create({
         borderRadius: 14
     }
 });
+
+async function getDefaultCalendarSource() {
+    const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+    return defaultCalendar.source;
+}
