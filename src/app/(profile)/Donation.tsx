@@ -12,6 +12,7 @@ const Donation = () => {
     const colorScheme = useColorScheme();
     const mainColor = Colors[colorScheme ?? 'light'].tint;
 
+    // Handle payment logic
     const handlePayment = async () => {
         if (!paymentMethod) {
             console.log('Incomplete card details');
@@ -31,6 +32,8 @@ const Donation = () => {
                     {editingAmount ? '' : `${donationAmount} $`}
                 </Text>
             </TouchableOpacity>
+            {/* Render input field when editing amount*/}
+
             {editingAmount && (
                 <TextInput
                     style={{ ...styles.input, borderWidth: editingAmount ? 0 : 1 }} // Remove border when editing
@@ -41,6 +44,8 @@ const Donation = () => {
                     autoFocus // Automatically focus the input when editing starts
                 />
             )}
+            {/*Reander card*/}
+        
             <CardField
                 postalCodeEnabled={false}
                 placeholders={{
@@ -61,6 +66,7 @@ const Donation = () => {
                     setPaymentMethod(cardDetails?.complete ? cardDetails : null);
                 }}
             />
+             {/*Reander button*/}
             <TouchableOpacity onPress={handlePayment} style={{ ...styles.button_container, backgroundColor: mainColor }}>
                 <Text style={styles.text}>Enter</Text>
             </TouchableOpacity>
