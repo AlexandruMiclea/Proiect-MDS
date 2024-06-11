@@ -17,8 +17,8 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
+// we start the app by going into the (tabs) route
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
@@ -59,20 +59,15 @@ export default function RootLayout() {
     return null;
   }
 
-  console.log('aci sunt Blaga');
-
+  // if component is loading, render a loading screen
   if (loading) {
-    console.log('ma incarc');
     return (<View style={styles.loadingScreen}>
       <ActivityIndicator size="large" color="#7975F8"></ActivityIndicator>
     </View>)
-  } else {
-    console.log('unde oi mere');
+  } else { // if I have a user that is logged in go to RootLayoutNav below
     if (session && session.user) {
-      console.log('rootlay');
       return <RootLayoutNav />;
-    } else {
-      console.log('authpa');
+    } else { // return the Authentication Page
       return <AuthPage></AuthPage>
     }
   }
@@ -83,7 +78,7 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
+      <AuthProvider> {/* here we wrap the app navigator with the authentication session provider so we can get it as a parameter for profile routes*/}
         <Stack screenOptions={{
           headerBackTitleVisible: false
         }}>

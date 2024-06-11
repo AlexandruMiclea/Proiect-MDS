@@ -8,10 +8,10 @@ import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
 
-// this method receives the user session as a parameter, in order to
-// be able to get the user data from SupaBase
+// we pass session as a parameter from AuthProvider, which "provides"
+// the current user session to all children pages (aka the entire app)
 export default function Account({ session }: { session: Session }) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // we use this to determine whether we render a loading screen or the profile data
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -27,9 +27,7 @@ export default function Account({ session }: { session: Session }) {
 
   // if the avatarUrl is changed, we want to get the image
   useEffect(() => {
-      // down below we modify the avatarUrl to some shenanigans, pulling images from supabase
-      // requires the name of the image only
-      if (avatarUrl && avatarUrl.endsWith('.png')) downloadImage(avatarUrl);
+      if (avatarUrl) downloadImage(avatarUrl);
     }, [avatarUrl]
   )
 
@@ -38,6 +36,7 @@ export default function Account({ session }: { session: Session }) {
   // the table
   async function downloadImage(path: string) {
     try {
+      // getting data from supabase and throwing an error if we don't manage to find data
       const { data, error } = await supabase.storage.from('avatars').download(path)
 
       if (error) {
@@ -59,11 +58,14 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+    // method below gets the profile username, fullname, email address and image path
   async function getProfile() {
     setLoading(true);
     try {
+      // theoretically if there is no session we shouldn't be on this page, handle error anyway
       if (!session?.user) throw new Error("No user on the session!");
 
+      // getting data from supabase and throwing an error if we don't manage to find data
       const { data, error, status } = await supabase
         .from("profiles")
         .select(
@@ -75,7 +77,7 @@ export default function Account({ session }: { session: Session }) {
         console.log(error);
         throw error;
       }
-
+      // set the data in this page so we can show it on render
       if (data) {
         setUsername(data.username);
         setAvatarUrl(data.avatar_url);
@@ -91,8 +93,8 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+  // if loading render a loading screen, else render the view
   if (loading) {
-    // TODO change loading screen circle color
     return (<View style={styles.loadingScreen}>
         <ActivityIndicator size="large" color="#7975F8"></ActivityIndicator>
     </View>)
@@ -125,7 +127,6 @@ export default function Account({ session }: { session: Session }) {
           />
         </View>
 
-        {/* Add by andrei*/}
         <View style={styles.buttonContainer}>
           <Pressable
             onPress={() => {
@@ -139,8 +140,6 @@ export default function Account({ session }: { session: Session }) {
           </Pressable>
         </View>
 
-
-        {/* Add by andrei*/}
         <View style={styles.buttonContainer}>
           <Pressable
             onPress={() => {router.navigate({pathname: "PreferenceSettings"})}}
@@ -155,7 +154,6 @@ export default function Account({ session }: { session: Session }) {
           </Pressable>
         </View>
 
-        {/* Add by andrei*/}
         <View style={styles.signOut}>
           <Pressable
               onPress={() => {

@@ -1,3 +1,5 @@
+// this component injects the current session in all the pages of the app
+// see src/app/_layout.tsx for more details
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";

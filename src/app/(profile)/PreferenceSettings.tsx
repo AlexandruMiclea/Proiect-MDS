@@ -3,12 +3,12 @@ import { supabase } from "@/lib/supabase";
 import { Pressable, Text, StyleSheet, View, Alert, ScrollView, ActivityIndicator} from "react-native";
 import Slider from "@react-native-community/slider";
 import { Session } from "@supabase/supabase-js";
-import Avatar from "@/components/Avatar";
-import { useAuth } from "../providers/AuthProvider";
 
-export default function PreferenceSettings() {
-  const { session } = useAuth();
-  const [loading, setLoading] = useState(true);
+// we pass session as a parameter from AuthProvider, which "provides"
+// the current user session to all children pages (aka the entire app)
+export default function PreferenceSettings({ session }: { session: Session }) {
+  const [loading, setLoading] = useState(true); // we use this to determine whether we render a loading screen or the profile data
+  // the following useStates are used to keep track of what preferences are set on the page
   const [PreferenceSport, setPreferenceSport] = useState(0);
   const [PreferenceFood, setPreferenceFood] = useState(0);
   const [PreferenceArts, setPreferenceArts] = useState(0);
@@ -23,6 +23,8 @@ export default function PreferenceSettings() {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
+      // get the values that are set in the database for all preferences,
+      // in order to place the sliderbar thumbs in the correct location
       const { data, error, status } = await supabase
         .from("profiles")
         .select(
@@ -35,6 +37,7 @@ export default function PreferenceSettings() {
         throw error;
       }
 
+      // if the data pull from database is successful, set preferences according to the data returned
       if (data) {
         setPreferenceSport(data.preference_sports);
         setPreferenceFood(data.preference_food);
@@ -50,6 +53,9 @@ export default function PreferenceSettings() {
     }
   }
 
+  // method that handles sending the render slidebar values to the database
+  // receives as parameter four numbers (0->4) which correspond to the values of
+  // the slidebars currently on the screen (0 being maxLeft, 4 being maxRight)
   async function updateProfile({
     preference_sports,
     preference_food,
@@ -64,7 +70,8 @@ export default function PreferenceSettings() {
     try {
       setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
-
+      // object whose scope is to send relevant data to the database
+      // send userId, updated preferences, and current date
       const updates = {
         id: session?.user.id,
         preference_sports,
@@ -88,15 +95,12 @@ export default function PreferenceSettings() {
   }
 
   if (loading) {
-    // TODO change loading screen circle color
     return (<View style={styles.loadingScreen}>
         <ActivityIndicator size="large" color="#7975F8"></ActivityIndicator>
     </View>)
   } else {
     return (
       <ScrollView style={styles.container}>
-        {/* Sliders for Arts */}
-
         <View style={styles.sliderContiner}>
           <Text style={styles.sliderTitle}>Preferences in Art</Text>
           <Slider
@@ -111,7 +115,6 @@ export default function PreferenceSettings() {
           />
         </View>
     
-        {/* Sliders for Food */}
         <View style={styles.sliderContiner}>
           <Text style={styles.sliderTitle}>Preferences in Food</Text>
           <Slider 
@@ -126,7 +129,6 @@ export default function PreferenceSettings() {
           />
         </View>
     
-        {/* Sliders for Sports */}
         <View style={styles.sliderContiner}>
           <Text style={styles.sliderTitle}>Preferences in Sports</Text>
           <Slider 
@@ -141,7 +143,6 @@ export default function PreferenceSettings() {
           />
         </View>
     
-        {/* Sliders for Itinerary Complexity */}
         <View style={styles.sliderContiner}>
           <Text style={styles.sliderTitle}>Itinerary Complexity</Text>
           <Slider 
@@ -156,7 +157,6 @@ export default function PreferenceSettings() {
           />
         </View>
     
-        {/* Add by andrei*/}
         <View style={styles.buttonContainer}>
           <Pressable
             onPress={() =>

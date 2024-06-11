@@ -1,11 +1,10 @@
+// TODO theoretically we can do away with this... just need to modify /Profile to /Account in explore _layout
+
 import 'react-native-url-polyfill/auto'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import SessionError from '../SessionError'
 import Account from '@/app/(profile)/Account'
-import { View } from 'react-native'
 import { Session } from '@supabase/supabase-js'
-import { Redirect } from 'expo-router'
 import AuthPage from '../(auth)/AuthPage'
 
 export default function Profile() {
