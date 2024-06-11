@@ -53,34 +53,60 @@ const ItineraryPage = () => {
                 radius: 20,
                 radiusUnit: "km"
             };
-
-            for (var searchValue of searchValueList) {
+            let updatedLocationData = [...locationData]; //local copy of the current state and used for processing duplicates to avoid issues with async state updates (locationData is state managed with useState) 
+            for (var searchValue of searchValueList){
                 query.searchQuery = searchValue;
-                const ans = await getAttractions({ reqParams: query });
-
-                for (var location of ans.data.slice(0, 3)) {
+                const ans = await getAttractions({reqParams : query});
+                // TODO for now I get 3 of each. We should add more based on the sliders of the authenticated user
+                for (var location of ans.data.slice(0, 3)){
+                    console.log(location.name);
+                    if (updatedLocationData.some(loc => loc.title === location.name)) {
+                        console.log(`Skipping location: ${location.name} because it's a duplicate`);
+                        continue; 
+                    }
                     let imgQuery: PhotoQuery = {
                         key: apiKey,
                         language: "en",
-                        limit: 3
-                    };
-                    const photoAns = await getPhotos({ locationId: location.location_id, reqParams: imgQuery });
-                    var urls: Array<{ imageUrl: string | null }> = [];
-                    photoAns.data.forEach(x => urls.push({ imageUrl: x.images.large.url }));
-                    var newLocation: sampleLocationData = {
-                        title: location.name,
-                        address: location.address_obj.address_string,
-                        description: "",
-                        images : urls// Now matches the updated type definition
-                    };
-                    setLocationData(locationData => [...locationData, newLocation]);
+                        limit: 3 // TODO can be changed
+                    }
+                    const photoAns = await getPhotos({locationId: location.location_id, reqParams: imgQuery});
+                    var urls: [{imageUrl: string}?] = [];
+                    photoAns.data.forEach(x => urls.push({imageUrl: x.images.large.url}));
+                    var newLocation : sampleLocationData = {
+                        title: location.name, 
+                        address: location.address_obj.address_string, 
+                        description: "", 
+                        images: urls
+                    }
+                    updatedLocationData.push(newLocation);
                 }
             }
+            setLocationData(updatedLocationData);
+            // TODO for each location get requests for the picture and description
+            // TODO we can also get cost
             setLoaded(true);
         };
 
         itineraryDataCall();
-    }, [setLoaded, setLocationData]);
+    }, [setLoaded])
+
+    //i need lat and lng to work
+    // useEffect(()=>{
+    //     const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m`;
+    //     const fetchCurrentWeather = async () => {
+    //         try {
+    //             const response = await fetch(url);
+    //             if (!response.ok){
+    //                 return;
+    //             }
+    //             const data = await response.json();
+    //             setCurrentTemperature(data.current.temperature_2m);
+    //         } catch (error){
+    //             console.error("Error fetching current temperature: ", error);
+    //         }
+    //     }
+    //     fetchCurrentWeather();
+    // }, [])
 
     if (!loaded) {
         return (
