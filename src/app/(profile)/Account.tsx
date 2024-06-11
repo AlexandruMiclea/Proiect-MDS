@@ -1,31 +1,41 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Text, Pressable, StyleSheet, View, Alert, ScrollView, ActivityIndicator } from "react-native";
-import { Button, Input } from "react-native-elements";
+import { Input } from "react-native-elements";
 import { Image } from "react-native"
 import { Session } from "@supabase/supabase-js";
-import Avatar from "@/components/Avatar";
-import { useNavigation, router, Redirect} from "expo-router";
+import { router } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
 
+// this method receives the user session as a parameter, in order to
+// be able to get the user data from SupaBase
 export default function Account({ session }: { session: Session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
 
+  // we use useFocusEffect in order to get profile data on page render 
+  // (life hack incase we modify user photo or username or full name,
+  // because we want to load changes from the database, they are not locally saved)
   useFocusEffect(
     React.useCallback(() => {
       if (session) getProfile();
     }, [session])
   )
 
+  // if the avatarUrl is changed, we want to get the image
   useEffect(() => {
+      // down below we modify the avatarUrl to some shenanigans, pulling images from supabase
+      // requires the name of the image only
       if (avatarUrl && avatarUrl.endsWith('.png')) downloadImage(avatarUrl);
     }, [avatarUrl]
   )
 
+  // method responsible with downloading the image
+  // receives the path as a parameter, which in fact is the name of the photograph in
+  // the table
   async function downloadImage(path: string) {
     try {
       const { data, error } = await supabase.storage.from('avatars').download(path)
