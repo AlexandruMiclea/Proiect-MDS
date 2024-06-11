@@ -47,16 +47,6 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="PackingList"
-        options={{
-          title: 'New packing list',
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="suitcase" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
         name="map"
         options={{
           title: 'Map',
