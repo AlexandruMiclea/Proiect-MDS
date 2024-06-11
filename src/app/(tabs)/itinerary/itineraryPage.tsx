@@ -4,7 +4,7 @@ import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import { LocationQuery, LocationObj, PhotoQuery, sampleLocationData } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, View, Text, ActivityIndicator, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
+import { Pressable, View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, GestureResponderEvent, Platform } from 'react-native';
 import LocationList from './locationList';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/app/providers/AuthProvider";
@@ -12,8 +12,8 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 //import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import * as Calendar from 'expo-calendar'; // Import the calendar module
-
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
+import { ScrollView } from 'react-native-virtualized-view'
 
 const ItineraryPage = () => {
     const params = useLocalSearchParams();
@@ -26,8 +26,29 @@ const ItineraryPage = () => {
     const mainColor = Colors[colorScheme ?? 'light'].tint;
     const [cityLat, setCityLat] = useState<string | null>(null);
     const [cityLon, setCityLon] = useState<string | null>(null);
-    const [currentTemperature, setCurrentTemperature] = useState(null);
+    const [isCelsiusActive, setIsCelsiusActive] = useState(true);
+    const [temperature, setTemperature] = useState(0); //dureaza prea mult sa faca fetch
 
+    const toggleTemperatureUnit = () => {
+        setIsCelsiusActive(!isCelsiusActive);
+        if (isCelsiusActive) {
+            setTemperature(parseFloat(((temperature * 9) / 5 + 32).toFixed(2)));
+        } else {
+            setTemperature(parseFloat(((temperature - 32) / 1.8).toFixed(2)));
+        }
+      };
+    const parseDate = (date:string | string[] | undefined) => {
+        if (typeof date == 'string'){
+            const dateParts = date.split('/');
+            const dateObj = new Date(`${dateParts[2]}-${dateParts[0]}-${dateParts[1]}`);
+            const options: Intl.DateTimeFormatOptions = {  
+                month: "short",
+                day: "numeric"
+            };
+            const formattedDate = dateObj.toLocaleDateString('en-US', options); 
+            return formattedDate;
+        }
+    }
     useEffect(() => {
         (async () => {
             // Request permission to access calendars
@@ -64,14 +85,13 @@ const ItineraryPage = () => {
         for (var searchValue of searchValueList) {
             const query: LocationQuery = {
                 key: apiKey,
-                searchQuery: searchValue,
-                category: "attractions",
+                searchQuery: "",
+                category: "attractions", // TODO we can also use geos for parks and such
                 latLong: getCoordinates(),
                 radius: 20,
                 radiusUnit: "km"
             };
             const ans = await getAttractions({ reqParams: query });
-
             for (var location of ans.data.slice(0, 3)) {
                 const imgQuery: PhotoQuery = {
                     key: apiKey,
@@ -92,6 +112,21 @@ const ItineraryPage = () => {
         }
 
         setLocationData(locationDataArray);
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${cityLat}&longitude=${cityLon}&current=temperature_2m`;
+        const fetchCurrentWeather = async () => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok){
+                    return;
+                }
+                const data = await response.json();
+                console.log(data.current.temperature_2m);
+                setTemperature(data.current.temperature_2m);
+            } catch (error){
+                console.error("Error fetching current temperature: ", error);
+            }
+        }
+        fetchCurrentWeather();
         setLoaded(true);
     };
 
@@ -174,24 +209,41 @@ const ItineraryPage = () => {
             </View>
         );
     } else {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                {buttonVisible && (
-                    <Pressable 
-                        style={{...styles.button_save, backgroundColor: mainColor}} 
-                        onPress={handleSave}
-                    >
-                        <Text style={styles.buttonText}>Save</Text>
-                    </Pressable>
-                )}
-                <Text style={styles.label}>{params.city}, {params.country}</Text>
-                <Text style={styles.label}>{params.startDate} - {params.endDate}</Text>
-                <Text style={styles.label}>Budget:  {params.budget} €</Text>
-                <Text style={styles.label}>Temperature: 29°C</Text>
-                <LocationList locations={locationData} />
+   return (
+        <View>
+            <ScrollView>
+                    {buttonVisible && (
+            <Pressable 
+                style={{...styles.button_save, backgroundColor: mainColor}} 
+                onPress={handleSave}
+            >
+                <Text style={styles.buttonText}>Save</Text>
+            </Pressable>
+        )}
+            <View style={styles.detailsContainer}>
+                <View>
+                    <Text style={styles.title}>{params.city}, {params.country}</Text>
+                    <Text style={styles.dates}>{parseDate(params.startDate)} - {parseDate(params.endDate)}</Text>
+                </View>
+                <View>
+                    
+                    <View style={styles.temperatureContainer}>
+                        <Text style={styles.weather}>{temperature}</Text>
+                        <TouchableOpacity onPress={toggleTemperatureUnit}>
+                            <Text style={[styles.weather, !isCelsiusActive && styles.inactiveText]}>°C</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={toggleTemperatureUnit}>
+                            <Text style={[styles.weather, isCelsiusActive && styles.inactiveText]}> | °F </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <Text>Budget: {params.budget}€</Text>
+                </View>
             </View>
-        );
-    }
+            <LocationList locations={locationData} />
+            </ScrollView>
+        </View>
+    );
+}
 };
 
 export default ItineraryPage;
@@ -202,6 +254,34 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         padding: 10
+    },
+    detailsContainer:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding:20,
+      },
+    title: {
+        color: 'black',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom:10,
+    },
+    dates: {
+        fontWeight: '500',
+        textTransform: 'uppercase',
+    },
+    temperatureContainer:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom:4,
+    },
+    weather: {
+        fontSize: 24,
+        fontWeight:'500',
+    },
+    inactiveText:{
+        color:'#c2c0c0',
     },
     button_style: {
         backgroundColor: 'blue',

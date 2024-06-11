@@ -58,9 +58,10 @@ const PackingListLayout = () => {
   const progress = calculateProgress();
   return (
     <View style={styles.container}>
-      <Image source={require("../../../../assets/images/stockholm.png")} style={styles.image}/>
+      {/* <Image source={require("../../../../assets/images/stockholm.png")} style={styles.image}/> */}
       <View style={styles.listContainer}>
-      <Text style={styles.title}>{cities["Romania"][0].name}</Text>
+        {/* city and country should be received as a prop */}
+      {/* <Text style={styles.title}>{cities["Romania"][0].name}</Text> */} 
   
       <View style={styles.detailsContainer}>
         <View>

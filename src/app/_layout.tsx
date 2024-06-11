@@ -90,9 +90,11 @@ function RootLayoutNav() {
         }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           {/*TODO see if these need to be moved in a separate profile _layout file*/ }
-          <Stack.Screen name="(profile)/Profile" options={{ headerShown: true, headerTitle: "Profile Page", headerTintColor: Colors.light.tint}}/>
-          <Stack.Screen name="(profile)/ProfileSettings" options={{ headerShown: true, headerTitle: "Account Settings", headerTintColor: Colors.light.tint}}/>
-          <Stack.Screen name="(profile)/PreferenceSettings" options={{ headerShown: true, headerTitle: "Trip Preferences", headerTintColor: Colors.light.tint}}/>
+          <Stack.Screen name="(profile)/Profile" options={{ headerShown: true, headerTitle: "Profile Page"}}/>
+          <Stack.Screen name="(profile)/ItineraryHistory" options={{ headerShown: true, headerTitle: "Your itineraries"}}/>
+          <Stack.Screen name="(profile)/ItineraryDetails" options={{ headerShown: true, headerTitle: "Itinerary details"}}/>
+          <Stack.Screen name="(profile)/ProfileSettings" options={{ headerShown: true, headerTitle: "Account Settings"}}/>
+          <Stack.Screen name="(profile)/PreferenceSettings" options={{ headerShown: true, headerTitle: "Trip Preferences"}}/>
         </Stack>
       </AuthProvider>
     </ThemeProvider>
