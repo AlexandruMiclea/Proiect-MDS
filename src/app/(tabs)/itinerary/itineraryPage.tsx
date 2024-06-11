@@ -14,6 +14,8 @@ const ItineraryPage = () => {
     const [loaded, setLoaded] = useState(false);
     const [locationData, setLocationData] = useState<sampleLocationData[]>([]);
     const searchValueList = ["art gallery", "museum", "monument"]; // TODO add more
+    const [cityLat, setCityLat] = useState<string | null>(null);
+    const [cityLon, setCityLon] = useState<string | null>(null);
     const [currentTemperature, setCurrentTemperature] = useState(null);
 
     // useEffect is used for handling asynchronous operations. In our case, we want
@@ -26,6 +28,8 @@ const ItineraryPage = () => {
                     if (params.city != undefined) {
                         if (city.name === params.city) {
                             answer += city.lat + ',' + city.lon;
+                            setCityLat(city.lat);
+                            setCityLon(city.lon);
                         }
                     }
                 }
@@ -91,21 +95,11 @@ const ItineraryPage = () => {
     if (!loaded) {
         // TODO change loading screen circle color
         return (<View style={styles.loadingScreen}>
-            <ActivityIndicator size="large" color="tint"></ActivityIndicator>
+            <ActivityIndicator size="large" color="#7975F8"></ActivityIndicator>
         </View>)
     } else {
-        console.log(params.startDate);
-        console.log(params.endDate);
-        console.log(params.country);
-        console.log(params.city);
-        console.log(params.budget);
-        console.log(locationData);
-
-        return (<View>
-            <Text>{params.city}, {params.country}</Text>
-            <Text>{params.startDate} - {params.endDate}</Text>
-            <Text>{params.budget} €</Text>
-            <Text>29°C</Text>
+        return (
+        <View>
             <LocationList locations={locationData}/>
         </View>)
     }

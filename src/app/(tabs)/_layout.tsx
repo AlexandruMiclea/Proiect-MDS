@@ -24,7 +24,7 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
     >
-      <Tabs.Screen name="index" options={{ href: null }} />
+      <Tabs.Screen name="index" options={{ href: null, headerShown: false }} />
 
       <Tabs.Screen
         name="explore"

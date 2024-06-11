@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Alert, StyleSheet, View, AppState } from 'react-native'
 import { supabase } from '../../lib/supabase'
-import { Button, Input } from 'react-native-elements'
+import { Button, Image } from 'react-native'
+import { Input } from 'react-native-elements'
 
 // Tells Supabase Auth to continuously refresh the session automatically if
 // the app is in the foreground. When this is added, you will continue to receive
@@ -15,7 +16,7 @@ AppState.addEventListener('change', (state) => {
   }
 })
 
-export default function Auth() {
+export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -48,6 +49,8 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
+      {/*TODO add app logo here*/}
+      <Image style={styles.logoImage} source={require('@assets/images/icon.png')}></Image>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
           label="Email"
@@ -70,16 +73,23 @@ export default function Auth() {
         />
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Button title="Sign in" style={{backgroundColor: '#7975F8'}} disabled={loading} onPress={() => signInWithEmail()} />
+        <Button title="Sign in" color="#7975F8" disabled={loading} onPress={() => signInWithEmail()} />
       </View>
       <View style={styles.verticallySpaced}>
-        <Button title="Sign up" disabled={loading} onPress={() => signUpWithEmail()} />
+        <Button title="Sign up" color="#7975F8" disabled={loading} onPress={() => signUpWithEmail()} />
       </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  logoImage: {
+    width:200,
+    height: 200,
+    justifyContent: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
   container: {
     marginTop: 40,
     padding: 12,
