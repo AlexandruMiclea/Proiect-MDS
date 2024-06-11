@@ -15,6 +15,9 @@ import * as Calendar from 'expo-calendar'; // Import the calendar module
 
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
+/**
+ * Represents the Itinerary Page component.
+ */
 const ItineraryPage = () => {
     const params = useLocalSearchParams();
     const [loaded, setLoaded] = useState(false);
@@ -42,6 +45,9 @@ const ItineraryPage = () => {
         })();
     }, []);
 
+    /**
+     * Loads the data for the itinerary page.
+     */
     const loadData = async () => {
         const getCoordinates = () => {
             let answer = "";
@@ -95,6 +101,10 @@ const ItineraryPage = () => {
         setLoaded(true);
     };
 
+    /**
+     * Handles the save button click event.
+     * @param event - The event object.
+     */
     async function handleSave(event: GestureResponderEvent): Promise<void> {
         setButtonVisible(false);
         console.log("Save button clicked");

@@ -43,7 +43,7 @@ const WorldMap = () => {
   const geoJsonData = require('assets/countries.geo.json');
 
   // Load list of countries to highlight
-  //const highlightedCountries = require('assets/countries/highlightedCountries.json').countries;
+  // const highlightedCountries = require('assets/countries/highlightedCountries.json').countries;
 
   // Load detailed country data
   const countryDetails = require('assets/countries/countries.json');
@@ -78,6 +78,7 @@ const WorldMap = () => {
           longitudeDelta: 180,
         }}
       >
+        {/* Render GeoJSON features */}
         {geoJsonData.features.map((feature, index) => (
           <Geojson
             key={index}
@@ -90,6 +91,8 @@ const WorldMap = () => {
             strokeWidth={1}
           />
         ))}
+
+        {/* Render markers for highlighted countries */}
         {markers.map((marker, index) => (
           <Marker
             key={index}
