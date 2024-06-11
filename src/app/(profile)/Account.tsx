@@ -22,7 +22,7 @@ export default function Account({ session }: { session: Session }) {
   )
 
   useEffect(() => {
-      if (avatarUrl && avatarUrl.endsWith('.png')) downloadImage(avatarUrl);
+      if (avatarUrl) downloadImage(avatarUrl);
     }, [avatarUrl]
   )
 
