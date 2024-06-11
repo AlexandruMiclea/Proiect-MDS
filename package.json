@@ -44,6 +44,7 @@
     "react-native-screens": "3.31.1",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.6",
+    "@stripe/stripe-react-native": "0.37.2"
     "expo-calendar": "~13.0.5"
   },
   "devDependencies": {
