@@ -1,0 +1,25 @@
+{
+    "countries": [
+      {
+        "name": "Romania",
+        "visitedCity": "Bucharest"
+      },
+      {
+        "name": "Romania",
+        "visitedCity": "Craiova"
+      },
+      {
+        "name": "France",
+        "visitedCity": "Paris"
+      },
+      {
+        "name": "Austria",
+        "visitedCity": "Vienna"
+      },
+      {
+        "name": "Germany",
+        "visitedCity": "Berlin"
+      }
+    ]
+  }
+  
