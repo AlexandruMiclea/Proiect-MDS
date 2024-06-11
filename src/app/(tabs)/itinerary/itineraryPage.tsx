@@ -3,113 +3,147 @@ import { apiKey } from '@/lib/tripadvisor';
 import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import { LocationQuery, LocationObj, PhotoQuery, sampleLocationData } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState,  } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
-const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
+import { useEffect, useState } from 'react';
+import { Pressable, Button, View, Text, ActivityIndicator, StyleSheet, GestureResponderEvent } from 'react-native';
 import LocationList from './locationList';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from "@/app/providers/AuthProvider";
+
+const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
 const ItineraryPage = () => {
     const params = useLocalSearchParams();
-
     const [loaded, setLoaded] = useState(false);
     const [locationData, setLocationData] = useState<sampleLocationData[]>([]);
+    const { session } = useAuth();
     const searchValueList = ["art gallery", "museum", "monument"]; // TODO add more
-    const [currentTemperature, setCurrentTemperature] = useState(null);
+    const [buttonVisible, setButtonVisible] = useState(true);
 
-    // useEffect is used for handling asynchronous operations. In our case, we want
-    // to wait for the Tripadvisor API calls to be completed
+
+
     useEffect(() => {
         const getCoordinates = () => {
             let answer = "";
-            if (params.country != undefined){
-                for (let city of countriesCities[params.country?.toString()]){
-                    if (params.city != undefined) {
-                        if (city.name === params.city) {
-                            answer += city.lat + ',' + city.lon;
-                        }
+            if (params.country != undefined) {
+                for (let city of countriesCities[params.country?.toString()]) {
+                    if (params.city != undefined && city.name === params.city) {
+                        answer += city.lat + ',' + city.lon;
                     }
                 }
             }
             return answer;
-        }
+        };
+
         const itineraryDataCall = async () => {
             let query: LocationQuery = {
                 key: apiKey,
                 searchQuery: "",
-                category: "attractions", // TODO we can also use geos for parks and such
+                category: "attractions",
                 latLong: getCoordinates(),
                 radius: 20,
                 radiusUnit: "km"
             };
-            for (var searchValue of searchValueList){
+
+            for (var searchValue of searchValueList) {
                 query.searchQuery = searchValue;
-                const ans = await getAttractions({reqParams : query});
-                // TODO for now I get 3 of each. We should add more based on the sliders of the authenticated user
-                for (var location of ans.data.slice(0, 3)){
-                    console.log(location.name);
+                const ans = await getAttractions({ reqParams: query });
+
+                for (var location of ans.data.slice(0, 3)) {
                     let imgQuery: PhotoQuery = {
                         key: apiKey,
                         language: "en",
-                        limit: 3 // TODO can be changed
-                    }
-                    const photoAns = await getPhotos({locationId: location.location_id, reqParams: imgQuery});
-                    var urls: [{imageUrl: string}?] = [];
-                    photoAns.data.forEach(x => urls.push({imageUrl: x.images.large.url}));
-                    var newLocation : sampleLocationData = {
-                        title: location.name, 
-                        address: location.address_obj.address_string, 
-                        description: "", images: urls
-                    }
+                        limit: 3
+                    };
+                    const photoAns = await getPhotos({ locationId: location.location_id, reqParams: imgQuery });
+                    var urls: Array<{ imageUrl: string | null }> = [];
+                    photoAns.data.forEach(x => urls.push({ imageUrl: x.images.large.url }));
+                    var newLocation: sampleLocationData = {
+                        title: location.name,
+                        address: location.address_obj.address_string,
+                        description: "",
+                        images : urls// Now matches the updated type definition
+                    };
                     setLocationData(locationData => [...locationData, newLocation]);
                 }
             }
-            // TODO for each location get requests for the picture and description
-            // TODO we can also get cost
             setLoaded(true);
-        }
-        itineraryDataCall();
-    }, [setLoaded, setLocationData])
+        };
 
-    //i need lat and lng to work
-    // useEffect(()=>{
-    //     const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m`;
-    //     const fetchCurrentWeather = async () => {
-    //         try {
-    //             const response = await fetch(url);
-    //             if (!response.ok){
-    //                 return;
-    //             }
-    //             const data = await response.json();
-    //             setCurrentTemperature(data.current.temperature_2m);
-    //         } catch (error){
-    //             console.error("Error fetching current temperature: ", error);
-    //         }
-    //     }
-    //     fetchCurrentWeather();
-    // }, [])
+        itineraryDataCall();
+    }, [setLoaded, setLocationData]);
 
     if (!loaded) {
-        // TODO change loading screen circle color
-        return (<View style={styles.loadingScreen}>
-            <ActivityIndicator size="large" color="tint"></ActivityIndicator>
-        </View>)
+        return (
+            <View style={styles.loadingScreen}>
+                <ActivityIndicator size="large" color="tint" />
+            </View>
+        );
     } else {
-        console.log(params.startDate);
-        console.log(params.endDate);
-        console.log(params.country);
-        console.log(params.city);
-        console.log(params.budget);
-        console.log(locationData);
+        async function handleSave(event: GestureResponderEvent): Promise<void> {
+            setButtonVisible(false);
+            console.log("Save button clicked");
+            console.log(session?.user.id);
+            const itineraryData = {
+                profile_id: session?.user.id,
+                city: params.city,
+                country: params.country,
+                start_date: params.startDate,
+                final_date: params.endDate,
+                budget: params.budget
+            };
 
-        return (<View>
-            <Text>{params.city}, {params.country}</Text>
-            <Text>{params.startDate} - {params.endDate}</Text>
-            <Text>{params.budget} €</Text>
-            <Text>29°C</Text>
-            <LocationList locations={locationData}/>
-        </View>)
+            const { data: newItinerary, error: itineraryError } = await supabase.from('itineraries').insert([itineraryData]).select();
+
+            if (itineraryError) {
+                console.error("Error saving itinerary:", itineraryError);
+                return;
+            }
+
+            const newItineraryId = newItinerary[0].id;
+
+            const locationPromises = locationData.map(loc => {
+                const locationData = {
+                    id_itinerar: newItineraryId,
+                    title: loc.title,
+                    description: loc.description,
+                    address: loc.address,
+                    photo1: loc.images[0]?.imageUrl || null,
+                    photo2: loc.images[1]?.imageUrl || null,
+                    photo3: loc.images[2]?.imageUrl || null,
+                    photo4: loc.images[3]?.imageUrl || null,
+                    photo5: loc.images[4]?.imageUrl || null
+                };
+
+                return supabase.from('locations').insert([locationData]);
+            });
+
+            const locationResults = await Promise.all(locationPromises);
+
+            locationResults.forEach(({ error }) => {
+                if (error) {
+                    console.error("Error saving location:", error);
+                }
+            });
+
+            console.log("Data saved successfully");
+        }
+
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                {buttonVisible && (
+                    <Pressable style={styles.button_style} onPress={handleSave}>
+                        <Text style={styles.buttonText}>Save</Text>
+                    </Pressable>
+                )}
+                <Text style={styles.label}>{params.city}, {params.country}</Text>
+                <Text style={styles.label}>{params.startDate} - {params.endDate}</Text>
+                <Text style={styles.label}>Budget:  {params.budget} €</Text>
+                <Text style={styles.label}>Temperature: 29°C</Text>
+                <LocationList locations={locationData} />
+            </View>
+        );
     }
-}
+};
 
 export default ItineraryPage;
 
@@ -119,5 +153,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         padding: 10
-    }
-})
+    },
+    button_style: {
+        backgroundColor: 'blue',
+        padding: 10,
+        borderRadius: 10,
+        margin: 10,
+        alignItems: 'center'
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20
+    },
+    label: {
+        fontWeight: 'bold',
+        marginTop: 10,
+      },
+});
