@@ -29,29 +29,8 @@ const ItineraryPage = () => {
     const mainColor = Colors[colorScheme ?? 'light'].tint;
     const [cityLat, setCityLat] = useState<string | null>(null);
     const [cityLon, setCityLon] = useState<string | null>(null);
-    const [isCelsiusActive, setIsCelsiusActive] = useState(true);
-    const [temperature, setTemperature] = useState(0); //dureaza prea mult sa faca fetch
+    const [currentTemperature, setCurrentTemperature] = useState(null);
 
-    const toggleTemperatureUnit = () => {
-        setIsCelsiusActive(!isCelsiusActive);
-        if (isCelsiusActive) {
-            setTemperature(parseFloat(((temperature * 9) / 5 + 32).toFixed(2)));
-        } else {
-            setTemperature(parseFloat(((temperature - 32) / 1.8).toFixed(2)));
-        }
-      };
-    const parseDate = (date:string | string[] | undefined) => {
-        if (typeof date == 'string'){
-            const dateParts = date.split('/');
-            const dateObj = new Date(`${dateParts[2]}-${dateParts[0]}-${dateParts[1]}`);
-            const options: Intl.DateTimeFormatOptions = {  
-                month: "short",
-                day: "numeric"
-            };
-            const formattedDate = dateObj.toLocaleDateString('en-US', options); 
-            return formattedDate;
-        }
-    }
     useEffect(() => {
         (async () => {
             // Request permission to access calendars
@@ -86,9 +65,10 @@ const ItineraryPage = () => {
             return answer;
         };
 
-        // Get the coordinates of the city
-        const itineraryDataCall = async () => {
-            let query: LocationQuery = {
+        let locationDataArray: sampleLocationData[] = [];
+
+        for (var searchValue of searchValueList) {
+            const query: LocationQuery = {
                 key: apiKey,
                 searchQuery: "",
                 category: "attractions", // TODO we can also use geos for parks and such
@@ -97,6 +77,7 @@ const ItineraryPage = () => {
                 radiusUnit: "km"
             };
             const ans = await getAttractions({ reqParams: query });
+
             for (var location of ans.data.slice(0, 3)) {
                 const imgQuery: PhotoQuery = {
                     key: apiKey,
@@ -117,77 +98,34 @@ const ItineraryPage = () => {
         }
 
         setLocationData(locationDataArray);
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${cityLat}&longitude=${cityLon}&current=temperature_2m`;
-        const fetchCurrentWeather = async () => {
-            try {
-                const response = await fetch(url);
-                if (!response.ok){
-                    return;
-                }
-                const data = await response.json();
-                console.log(data.current.temperature_2m);
-                setTemperature(data.current.temperature_2m);
-            } catch (error){
-                console.error("Error fetching current temperature: ", error);
-            }
-        }
-        fetchCurrentWeather();
         setLoaded(true);
     };
 
-        itineraryDataCall();
-    }, [setLoaded, setLocationData]);
-    
-    if (!loaded) {
-        return (
-            <View style={styles.loadingScreen}>
-                <ActivityIndicator size="large" color="tint" />
-            </View>
-        );
-    } else {
-        async function handleSave(event: GestureResponderEvent): Promise<void> {
-            setButtonVisible(false);
-            console.log("Save button clicked");
-            console.log(session?.user.id);
-            const itineraryData = {
-                profile_id: session?.user.id,
-                city: params.city,
-                country: params.country,
-                start_date: params.startDate,
-                final_date: params.endDate,
-                budget: params.budget
-            };
-
+    /**
+     * Handles the save button click event.
+     * @param event - The event object.
+     */
+    async function handleSave(event: GestureResponderEvent): Promise<void> {
+        setButtonVisible(false);
+        console.log("Save button clicked");
+        console.log(session?.user.id);
+        const itineraryData = {
+            profile_id: session?.user.id,
+            city: params.city,
+            country: params.country,
+            start_date: params.startDate,
+            final_date: params.endDate,
+            budget: params.budget
+        };
 
         const { data: newItinerary, error: itineraryError } = await supabase.from('itineraries').insert([itineraryData]).select();
 
+        if (itineraryError) {
+            console.error("Error saving itinerary:", itineraryError);
+            return;
+        }
 
-            // If there was an error saving the itinerary, log it and return
-            if (itineraryError) {
-                console.error("Error saving itinerary:", itineraryError);
-                return;
-            }
-
-            // Get the ID of the new itinerary
-            const newItineraryId = newItinerary[0].id;
-
-            const locationPromises = locationData.map(loc => {
-                const locationData = {
-                    id_itinerar: newItineraryId,
-                    title: loc.title,
-                    description: loc.description,
-                    address: loc.address,
-                    photo1: loc.images[0]?.imageUrl || null,
-                    photo2: loc.images[1]?.imageUrl || null,
-                    photo3: loc.images[2]?.imageUrl || null,
-                    photo4: loc.images[3]?.imageUrl || null,
-                    photo5: loc.images[4]?.imageUrl || null
-                };
-
-                return supabase.from('locations').insert([locationData]);
-            });
-            // Wait for all locations to be saved
-            const locationResults = await Promise.all(locationPromises);
+        const newItineraryId = newItinerary[0].id;
 
         const defaultCalendarSource =
             Platform.OS === 'ios'
@@ -244,41 +182,24 @@ const ItineraryPage = () => {
             </View>
         );
     } else {
-   return (
-        <View>
-            <ScrollView>
-                    {buttonVisible && (
-            <Pressable 
-                style={{...styles.button_save, backgroundColor: mainColor}} 
-                onPress={handleSave}
-            >
-                <Text style={styles.buttonText}>Save</Text>
-            </Pressable>
-        )}
-            <View style={styles.detailsContainer}>
-                <View>
-                    <Text style={styles.title}>{params.city}, {params.country}</Text>
-                    <Text style={styles.dates}>{parseDate(params.startDate)} - {parseDate(params.endDate)}</Text>
-                </View>
-                <View>
-                    
-                    <View style={styles.temperatureContainer}>
-                        <Text style={styles.weather}>{temperature}</Text>
-                        <TouchableOpacity onPress={toggleTemperatureUnit}>
-                            <Text style={[styles.weather, !isCelsiusActive && styles.inactiveText]}>°C</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={toggleTemperatureUnit}>
-                            <Text style={[styles.weather, isCelsiusActive && styles.inactiveText]}> | °F </Text>
-                        </TouchableOpacity>
-                    </View>
-                    <Text>Budget: {params.budget}€</Text>
-                </View>
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                {buttonVisible && (
+                    <Pressable 
+                        style={{...styles.button_save, backgroundColor: mainColor}} 
+                        onPress={handleSave}
+                    >
+                        <Text style={styles.buttonText}>Save</Text>
+                    </Pressable>
+                )}
+                <Text style={styles.label}>{params.city}, {params.country}</Text>
+                <Text style={styles.label}>{params.startDate} - {params.endDate}</Text>
+                <Text style={styles.label}>Budget:  {params.budget} €</Text>
+                <Text style={styles.label}>Temperature: 29°C</Text>
+                <LocationList locations={locationData} />
             </View>
-            <LocationList locations={locationData} />
-            </ScrollView>
-        </View>
-    );
-}
+        );
+    }
 };
 
 export default ItineraryPage;
