@@ -4,7 +4,7 @@ import countriesCitiesJson from '@assets/data/countriesInfo.json';
 import { LocationQuery, LocationObj, PhotoQuery, sampleLocationData } from '@/types';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, GestureResponderEvent, Platform } from 'react-native';
+import { Pressable, View, Text, ActivityIndicator, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
 import LocationList from './locationList';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from "@/app/providers/AuthProvider";
@@ -12,8 +12,8 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 //import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import * as Calendar from 'expo-calendar'; // Import the calendar module
+
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
-import { ScrollView } from 'react-native-virtualized-view'
 
 /**
  * Represents the Itinerary Page component.
@@ -30,9 +30,14 @@ const ItineraryPage = () => {
     const [cityLat, setCityLat] = useState<string | null>(null);
     const [cityLon, setCityLon] = useState<string | null>(null);
     const [currentTemperature, setCurrentTemperature] = useState(null);
+    const [temperature, setTemperature] = useState(16);
+
 
     useEffect(() => {
         (async () => {
+
+
+
             // Request permission to access calendars
             const { status } = await Calendar.requestCalendarPermissionsAsync();
             if (status !== 'granted') {
@@ -70,8 +75,8 @@ const ItineraryPage = () => {
         for (var searchValue of searchValueList) {
             const query: LocationQuery = {
                 key: apiKey,
-                searchQuery: "",
-                category: "attractions", // TODO we can also use geos for parks and such
+                searchQuery: searchValue,
+                category: "attractions",
                 latLong: getCoordinates(),
                 radius: 20,
                 radiusUnit: "km"
@@ -93,9 +98,31 @@ const ItineraryPage = () => {
                     description: "",
                     images : urls
                 };
-                locationDataArray.push(newLocation);
+
+                const isTitleExists = locationDataArray.some(existingLocation => existingLocation.title === newLocation.title);
+
+                if (!isTitleExists) {
+                    locationDataArray.push(newLocation);
+                }
+
             }
         }
+
+        const fetchCurrentWeather = async () => {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${cityLat}&longitude=${cityLon}&current=temperature_2m`;
+                const response = await fetch(url);
+                if (!response.ok){
+                    return;
+                }
+                const data = await response.json();
+                console.log(data.current.temperature_2m);
+                setTemperature(data.current.temperature_2m);
+            } catch (error){
+                console.error("Error fetching current temperature: ", error);
+            }
+        }
+        fetchCurrentWeather();
 
         setLocationData(locationDataArray);
         setLoaded(true);
@@ -195,12 +222,17 @@ const ItineraryPage = () => {
                 <Text style={styles.label}>{params.city}, {params.country}</Text>
                 <Text style={styles.label}>{params.startDate} - {params.endDate}</Text>
                 <Text style={styles.label}>Budget:  {params.budget} €</Text>
-                <Text style={styles.label}>Temperature: 29°C</Text>
+                <Text style={styles.label}>Temperature: {temperature}</Text>
                 <LocationList locations={locationData} />
             </View>
         );
     }
 };
+
+
+
+
+
 
 export default ItineraryPage;
 
@@ -210,34 +242,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         padding: 10
-    },
-    detailsContainer:{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding:20,
-      },
-    title: {
-        color: 'black',
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom:10,
-    },
-    dates: {
-        fontWeight: '500',
-        textTransform: 'uppercase',
-    },
-    temperatureContainer:{
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom:4,
-    },
-    weather: {
-        fontSize: 24,
-        fontWeight:'500',
-    },
-    inactiveText:{
-        color:'#c2c0c0',
     },
     button_style: {
         backgroundColor: 'blue',
