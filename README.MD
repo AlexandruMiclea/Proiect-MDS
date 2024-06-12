@@ -4,7 +4,7 @@ Our app is a cross-platform mobile application developed using Expo and React Na
 
 # Demo
 
-You can find a video demo of our app [here](https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley).
+You can find a video demo of our app [here](https://www.youtube.com/watch?v=toUSylRWipc).
 
 # Team members
 
