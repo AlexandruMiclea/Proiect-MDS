@@ -12,6 +12,8 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 //import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
 import * as Calendar from 'expo-calendar'; // Import the calendar module
+import { ScrollView } from 'react-native-virtualized-view';
+import { TouchableOpacity } from 'react-native';
 
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 
@@ -27,16 +29,35 @@ const ItineraryPage = () => {
     const [buttonVisible, setButtonVisible] = useState(true);
     const colorScheme = useColorScheme();
     const mainColor = Colors[colorScheme ?? 'light'].tint;
+    const [temperature, setTemperature] = useState(16);
     const [cityLat, setCityLat] = useState<string | null>(null);
     const [cityLon, setCityLon] = useState<string | null>(null);
-    const [currentTemperature, setCurrentTemperature] = useState(null);
-    const [temperature, setTemperature] = useState(16);
+    const [isCelsiusActive, setIsCelsiusActive] = useState(true);
+
+    const toggleTemperatureUnit = () => {
+        setIsCelsiusActive(!isCelsiusActive);
+        if (isCelsiusActive) {
+            setTemperature(parseFloat(((temperature * 9) / 5 + 32).toFixed(2)));
+        } else {
+            setTemperature(parseFloat(((temperature - 32) / 1.8).toFixed(2)));
+        }
+      };
+    const parseDate = (date:string | string[] | undefined) => {
+        if (typeof date == 'string'){
+            const dateParts = date.split('.');
+            const dateObj = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+            const options: Intl.DateTimeFormatOptions = {  
+                month: "short",
+                day: "numeric"
+            };
+            const formattedDate = dateObj.toLocaleDateString('en-US', options); 
+            return formattedDate;
+        }
+    }
 
 
     useEffect(() => {
         (async () => {
-
-
 
             // Request permission to access calendars
             const { status } = await Calendar.requestCalendarPermissionsAsync();
@@ -210,21 +231,37 @@ const ItineraryPage = () => {
         );
     } else {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                {buttonVisible && (
-                    <Pressable 
-                        style={{...styles.button_save, backgroundColor: mainColor}} 
-                        onPress={handleSave}
-                    >
-                        <Text style={styles.buttonText}>Save</Text>
-                    </Pressable>
-                )}
-                <Text style={styles.label}>{params.city}, {params.country}</Text>
-                <Text style={styles.label}>{params.startDate} - {params.endDate}</Text>
-                <Text style={styles.label}>Budget:  {params.budget} €</Text>
-                <Text style={styles.label}>Temperature: {temperature}</Text>
-                <LocationList locations={locationData} />
+            <ScrollView>
+            <View style={styles.detailsContainer}>
+                <View>
+                <Text style={styles.title}>{params.city}, {params.country}</Text>
+                <Text style={styles.dates}>{parseDate(params.startDate)} - {parseDate(params.endDate)}</Text>
+                </View>
+                <View>
+                <View style={styles.temperatureContainer}>
+                    <Text style={styles.weather}>{temperature}</Text>
+                    <TouchableOpacity onPress={toggleTemperatureUnit}>
+                    <Text style={[styles.weather, !isCelsiusActive && styles.inactiveText]}>°C</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={toggleTemperatureUnit}>
+                    <Text style={[styles.weather, isCelsiusActive && styles.inactiveText]}> | °F </Text>
+                    </TouchableOpacity>
+                </View>
+                <Text>Budget: {params.budget}€</Text>
+                </View>
             </View>
+            <LocationList locations={locationData} />
+            <View style={{ alignItems: 'center', justifyContent: "center" }}>
+                {buttonVisible && (
+                <Pressable 
+                    style={{...styles.button_save, backgroundColor: mainColor, alignItems: 'center', justifyContent: "center"}} 
+                    onPress={handleSave}
+                >
+                    <Text style={styles.buttonText}>Save</Text>
+                </Pressable>
+                )}
+            </View>
+            </ScrollView>
         );
     }
 };
@@ -237,6 +274,35 @@ const ItineraryPage = () => {
 export default ItineraryPage;
 
 const styles = StyleSheet.create({
+    detailsContainer:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding:20,
+      },
+    title: {
+        color: 'black',
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom:10,
+    },
+    dates: {
+        fontWeight: '500',
+        textTransform: 'uppercase',
+    },
+    temperatureContainer:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom:4,
+    },
+    weather: {
+        fontSize: 24,
+        fontWeight:'500',
+    },
+    inactiveText:{
+        color:'#c2c0c0',
+    },
+
     loadingScreen: {
         flex: 1,
         justifyContent: 'center',
