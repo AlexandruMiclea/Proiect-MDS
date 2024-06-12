@@ -157,6 +157,21 @@ export default function Account({ session }: { session: Session }) {
           </Pressable>
         </View>
 
+         {/* Add by andrei*/}
+         <View style={styles.buttonContainer}>
+          <Pressable
+            onPress={() => {router.navigate({pathname: "Donation"})}}
+            style={({ pressed }) => [
+              styles.pressable,
+              { backgroundColor: pressed ? '#6762F5' : 'transparent' }
+            ]}
+          >
+            <Text style={[styles.text]}>
+              Donation
+            </Text>
+          </Pressable>
+        </View>
+
         {/* Add by andrei*/}
         <View style={styles.signOut}>
           <Pressable

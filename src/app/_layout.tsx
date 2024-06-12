@@ -95,6 +95,7 @@ function RootLayoutNav() {
           <Stack.Screen name="(profile)/ItineraryDetails" options={{ headerShown: true, headerTitle: "Itinerary details"}}/>
           <Stack.Screen name="(profile)/ProfileSettings" options={{ headerShown: true, headerTitle: "Account Settings"}}/>
           <Stack.Screen name="(profile)/PreferenceSettings" options={{ headerShown: true, headerTitle: "Trip Preferences"}}/>
+          <Stack.Screen name="(profile)/Donation" options={{ headerShown: true, headerTitle: "Donation", headerTintColor: Colors.light.tint}}/>
         </Stack>
       </AuthProvider>
     </ThemeProvider>

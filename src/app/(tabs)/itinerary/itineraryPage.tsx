@@ -15,6 +15,9 @@ import * as Calendar from 'expo-calendar'; // Import the calendar module
 const countriesCities = JSON.parse(JSON.stringify(countriesCitiesJson));
 import { ScrollView } from 'react-native-virtualized-view'
 
+/**
+ * Represents the Itinerary Page component.
+ */
 const ItineraryPage = () => {
     const params = useLocalSearchParams();
     const [loaded, setLoaded] = useState(false);
@@ -63,6 +66,9 @@ const ItineraryPage = () => {
         })();
     }, []);
 
+    /**
+     * Loads the data for the itinerary page.
+     */
     const loadData = async () => {
         const getCoordinates = () => {
             let answer = "";
@@ -80,10 +86,9 @@ const ItineraryPage = () => {
             return answer;
         };
 
-        let locationDataArray: sampleLocationData[] = [];
-
-        for (var searchValue of searchValueList) {
-            const query: LocationQuery = {
+        // Get the coordinates of the city
+        const itineraryDataCall = async () => {
+            let query: LocationQuery = {
                 key: apiKey,
                 searchQuery: "",
                 category: "attractions", // TODO we can also use geos for parks and such
@@ -130,27 +135,59 @@ const ItineraryPage = () => {
         setLoaded(true);
     };
 
-    async function handleSave(event: GestureResponderEvent): Promise<void> {
-        setButtonVisible(false);
-        console.log("Save button clicked");
-        console.log(session?.user.id);
-        const itineraryData = {
-            profile_id: session?.user.id,
-            city: params.city,
-            country: params.country,
-            start_date: params.startDate,
-            final_date: params.endDate,
-            budget: params.budget
-        };
+        itineraryDataCall();
+    }, [setLoaded, setLocationData]);
+    
+    if (!loaded) {
+        return (
+            <View style={styles.loadingScreen}>
+                <ActivityIndicator size="large" color="tint" />
+            </View>
+        );
+    } else {
+        async function handleSave(event: GestureResponderEvent): Promise<void> {
+            setButtonVisible(false);
+            console.log("Save button clicked");
+            console.log(session?.user.id);
+            const itineraryData = {
+                profile_id: session?.user.id,
+                city: params.city,
+                country: params.country,
+                start_date: params.startDate,
+                final_date: params.endDate,
+                budget: params.budget
+            };
+
 
         const { data: newItinerary, error: itineraryError } = await supabase.from('itineraries').insert([itineraryData]).select();
 
-        if (itineraryError) {
-            console.error("Error saving itinerary:", itineraryError);
-            return;
-        }
 
-        const newItineraryId = newItinerary[0].id;
+            // If there was an error saving the itinerary, log it and return
+            if (itineraryError) {
+                console.error("Error saving itinerary:", itineraryError);
+                return;
+            }
+
+            // Get the ID of the new itinerary
+            const newItineraryId = newItinerary[0].id;
+
+            const locationPromises = locationData.map(loc => {
+                const locationData = {
+                    id_itinerar: newItineraryId,
+                    title: loc.title,
+                    description: loc.description,
+                    address: loc.address,
+                    photo1: loc.images[0]?.imageUrl || null,
+                    photo2: loc.images[1]?.imageUrl || null,
+                    photo3: loc.images[2]?.imageUrl || null,
+                    photo4: loc.images[3]?.imageUrl || null,
+                    photo5: loc.images[4]?.imageUrl || null
+                };
+
+                return supabase.from('locations').insert([locationData]);
+            });
+            // Wait for all locations to be saved
+            const locationResults = await Promise.all(locationPromises);
 
         const defaultCalendarSource =
             Platform.OS === 'ios'
@@ -189,8 +226,6 @@ const ItineraryPage = () => {
             title: params.city,
             description: `Itinerary for ${params.city}, ${params.country}`,
             address: '',
-            calendarId: newCalendarID,
-            eventId
         };
 
         const { error: locationError } = await supabase.from('locations').insert([locationData]);
