@@ -2,6 +2,10 @@
 
 Our app is a cross-platform mobile application developed using Expo and React Native, aimed at enhancing the travel experience for users. Designed as a comprehensive travel companion, the app offers a suite of tools and features to assist travelers in planning, navigating, and enjoying their journeys with ease. This is a university project for a Software Development Methods course.
 
+# Demo
+
+You can find a video demo of our app [here](https://www.youtube.com/watch?v=toUSylRWipc).
+
 # Team members
 
 - [Miclea Alexandru](https://github.com/AlexandruMiclea)
@@ -48,6 +52,18 @@ We created them to better understand the designs, code architecture, and propose
 ### User flow
 
 [![](https://mermaid.ink/img/pako:eNqFVE2PmzAQ_SuWT7sSiQghCuHQS7ZbVcpW0SL10LAHFybEWmIjY3Y3DfnvNbYhkE1aLsyM33ueD2uOOOEp4BBnghQ7tHqOGVJfJImQd3f6d3-PRqMvaMUzyqJEALCNtpFxXgyjd9zA66hKEijLbZWjvDmq0dePIucC1iSDjbVR49wQeCQ0h7QlP4MUBw3ZaNPALfV8qJnarfuCV2GPXGRcooKU5TsXaY1MYG39jT1vfXvXEGTvK6Gv8wPeOxFlXyr0jjV9yZmkrIJBhwy0F9DQn1TJvdGSStWZhFdMCgpljZ5IYSejrOFcrkoY6gGlIFWXlcDSBB60v7EeMu4NoaUAIgExJUdV_iBI03RV3PfWsyk1Lehi_07uG0eSo0LwrZp9jdbG0C_G2v0X01V9LqzNRHelu3RFS9n1_iI981jJG_Sr-DSIgZShQA6J7JM6jO3iueZBHy9g59y7YVwgbtNUu36T5PVqpcPmdMhPlQ0m_x9sbx7mCewIU6adF0qJJIgL5cMWBLCkGYLlRCBVjlnZzbENvAyk26jeOL3rYoYdvAexJzRVy-rYkGIsd7CHGIfKTIl4jXHMTgpHKsmjA0twKEUFDha8ynatUxUqTXigRC28fRssCMPhEX_gcOTNxhPXnc39hT9zPX82nTr4gEN_4o4X7tydBYHrBZ4_Pzn4D-dKwR0Hi-l8Ekxdz_MXCzfwHQwplVw8mc2qF6y-45cmbElewukvRLnnkg?type=png)](https://mermaid.live/edit#pako:eNqFVE2PmzAQ_SuWT7sSiQghCuHQS7ZbVcpW0SL10LAHFybEWmIjY3Y3DfnvNbYhkE1aLsyM33ueD2uOOOEp4BBnghQ7tHqOGVJfJImQd3f6d3-PRqMvaMUzyqJEALCNtpFxXgyjd9zA66hKEijLbZWjvDmq0dePIucC1iSDjbVR49wQeCQ0h7QlP4MUBw3ZaNPALfV8qJnarfuCV2GPXGRcooKU5TsXaY1MYG39jT1vfXvXEGTvK6Gv8wPeOxFlXyr0jjV9yZmkrIJBhwy0F9DQn1TJvdGSStWZhFdMCgpljZ5IYSejrOFcrkoY6gGlIFWXlcDSBB60v7EeMu4NoaUAIgExJUdV_iBI03RV3PfWsyk1Lehi_07uG0eSo0LwrZp9jdbG0C_G2v0X01V9LqzNRHelu3RFS9n1_iI981jJG_Sr-DSIgZShQA6J7JM6jO3iueZBHy9g59y7YVwgbtNUu36T5PVqpcPmdMhPlQ0m_x9sbx7mCewIU6adF0qJJIgL5cMWBLCkGYLlRCBVjlnZzbENvAyk26jeOL3rYoYdvAexJzRVy-rYkGIsd7CHGIfKTIl4jXHMTgpHKsmjA0twKEUFDha8ynatUxUqTXigRC28fRssCMPhEX_gcOTNxhPXnc39hT9zPX82nTr4gEN_4o4X7tydBYHrBZ4_Pzn4D-dKwR0Hi-l8Ekxdz_MXCzfwHQwplVw8mc2qF6y-45cmbElewukvRLnnkg)
+
+# Bug reporting and solving with pull requests
+
+You can see them [here](https://github.com/AlexandruMiclea/Proiect-MDS/issues/5) and [here](https://github.com/AlexandruMiclea/Proiect-MDS/issues/11).
+
+# Refactoring & code standars
+
+You can see some of our commits where we refactorized our code [here](https://github.com/AlexandruMiclea/Proiect-MDS/commit/109dad51eadd202238c9c98cf28e8d7106fed80c) and [here](https://github.com/AlexandruMiclea/Proiect-MDS/commit/cf4c7641a4c8bf92cc036f6319637106dbfc79b1).
+
+# Code comments
+
+We used comments to clarify complex logic, serve as internal documentation, and facilitate maintenance and collaboration by explaining code functionality and decisions. They assist in debugging and provide historical context for code changes. You can see some examples [here](https://imgur.com/a/Cp8bzvv).
 
 # Design patterns
 

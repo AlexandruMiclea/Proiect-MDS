@@ -99,3 +99,14 @@ export type sampleLocationData = {
     address: string,
     images: Array<{ imageUrl: string | null }>;
 };
+
+
+export type Itinerary = {
+    id: string;
+    profile_id: string;
+    city: string;
+    country: string;
+    budget: string;
+    start_date: string;
+    final_date: string;
+  }

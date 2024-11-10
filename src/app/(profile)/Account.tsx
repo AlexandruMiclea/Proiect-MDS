@@ -114,6 +114,18 @@ export default function Account({ session }: { session: Session }) {
             disabled
           />
         </View>
+        <View style={styles.buttonContainer}>
+          <Pressable
+            onPress={() => {
+              router.navigate({pathname: "ItineraryHistory"});
+            }}
+            style={({ pressed }) => [
+              styles.pressable,
+              { backgroundColor: pressed ? '#6762F5' : 'transparent' }
+            ]}>
+            <Text style={[styles.text]}> Show all itineraries </Text>
+          </Pressable>
+        </View>
 
         {/* Add by andrei*/}
         <View style={styles.buttonContainer}>
@@ -247,7 +259,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#7975F8',
   },
   signOut: {
-    marginTop: 20,
+    marginVertical: 20,
     alignSelf: "stretch",
     borderRadius: 8,
     backgroundColor: 'brown',
