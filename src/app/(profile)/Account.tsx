@@ -148,7 +148,11 @@ export default function Account({ session }: { session: Session }) {
          {/* Add by andrei*/}
          <View style={styles.buttonContainer}>
           <Pressable
+<<<<<<< Updated upstream
             onPress={() => {router.navigate({pathname: "Donation"})}}
+=======
+            onPress={() => {router.navigate({pathname: "PreferenceSettings"})}}
+>>>>>>> Stashed changes
             style={({ pressed }) => [
               styles.pressable,
               { backgroundColor: pressed ? '#6762F5' : 'transparent' }
@@ -160,6 +164,12 @@ export default function Account({ session }: { session: Session }) {
           </Pressable>
         </View>
 
+<<<<<<< Updated upstream
+=======
+
+
+
+>>>>>>> Stashed changes
         {/* Add by andrei*/}
         <View style={styles.signOut}>
           <Pressable
